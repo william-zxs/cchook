@@ -1,13 +1,14 @@
 import { ConfigManager } from '../../config/manager.js';
 import { FileSystemUtils } from '../../utils/fs.js';
 import { Logger } from '../../utils/logger.js';
+import i18n from '../../utils/i18n.js';
 import chalk from 'chalk';
 
 export function statusCommand(program) {
   program
     .command('status')
-    .description('显示当前配置状态')
-    .option('-v, --verbose', '显示详细信息')
+    .description(i18n.t('status.description'))
+    .option('-v, --verbose', i18n.t('status.verbose'))
     .action(async (options) => {
       try {
         const configManager = new ConfigManager();
@@ -15,28 +16,28 @@ export function statusCommand(program) {
         const config = configManager.getConfig();
 
         // 系统信息
-        console.log(chalk.blue.bold('📊 cchook 系统状态'));
+        console.log(chalk.blue.bold(i18n.t('status.system.title')));
         console.log('');
 
         // 工作模式
         const modeColor = config.mode === 'normal' ? 'green' : 'yellow';
         const modeIcon = config.mode === 'normal' ? '🔔' : '🔕';
-        console.log(chalk.white('工作模式: ') + chalk[modeColor](`${modeIcon} ${config.mode.toUpperCase()}`));
+        console.log(i18n.t('status.mode', chalk[modeColor](`${modeIcon} ${config.mode.toUpperCase()}`)));
 
         // 通知配置
         const notificationType = config.notifications?.type || 'unknown';
-        console.log(chalk.white('通知类型: ') + chalk.blue(notificationType));
+        console.log(i18n.t('status.notification.type', chalk.blue(notificationType)));
 
         // 启用事件数量
         const enabledCount = config.enabledEvents.length;
         const totalEvents = 9; // 总事件数
         const eventsColor = enabledCount > 0 ? 'green' : 'red';
-        console.log(chalk.white('启用事件: ') + chalk[eventsColor](`${enabledCount}/${totalEvents}`));
+        console.log(i18n.t('status.enabled.events', chalk[eventsColor](`${enabledCount}/${totalEvents}`)));
 
         console.log('');
 
         // 配置文件状态
-        console.log(chalk.blue.bold('📁 配置文件状态'));
+        console.log(chalk.blue.bold(i18n.t('status.config.files.title')));
         
         const cchookConfigExists = await FileSystemUtils.fileExists(
           FileSystemUtils.getCchookConfigPath()

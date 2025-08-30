@@ -1,6 +1,7 @@
 import { ConfigManager } from '../config/manager.js';
 import { NotificationFactory } from '../notifications/factory.js';
 import { Logger } from '../utils/logger.js';
+import i18n from '../utils/i18n.js';
 
 export class HookHandler {
   constructor() {
@@ -16,8 +17,8 @@ export class HookHandler {
       const { hook_event_name: eventName } = hookData;
       
       if (!eventName) {
-        result = { success: false, error: '缺少事件名称' };
-        Logger.error('缺少 hook_event_name 字段');
+        result = { success: false, error: 'Missing event name' };
+        Logger.error('Missing hook_event_name field');
         await Logger.hookLog(eventName || 'UNKNOWN', hookData, result);
         return result;
       }
@@ -25,7 +26,7 @@ export class HookHandler {
       // 检查事件是否启用
       if (!this.configManager.isEventEnabled(eventName)) {
         result = { success: true, skipped: true };
-        Logger.debug(`事件 ${eventName} 未启用或处于静音模式`);
+        Logger.debug(`Event ${eventName} not enabled or in silent mode`);
         await Logger.hookLog(eventName, hookData, result);
         return result;
       }
@@ -37,13 +38,13 @@ export class HookHandler {
       // 根据事件类型处理
       result = await this.handleEventType(eventName, hookData, notifier);
       
-      Logger.debug(`事件 ${eventName} 处理完成:`, result);
+      Logger.debug(`Event ${eventName} processing completed:`, result);
       await Logger.hookLog(eventName, hookData, result);
       return result;
 
     } catch (error) {
       result = { success: false, error: error.message };
-      Logger.error('处理 hook 事件失败:', error);
+      Logger.error('Failed to process hook event:', error);
       await Logger.hookLog(hookData?.hook_event_name || 'UNKNOWN', hookData, result);
       return result;
     }
@@ -79,8 +80,8 @@ export class HookHandler {
         return this.handleSessionEnd(hookData, notifier);
       
       default:
-        Logger.warning(`未知的事件类型: ${eventName}`);
-        return { success: false, error: `未知的事件类型: ${eventName}` };
+        Logger.warning(`Unknown event type: ${eventName}`);
+        return { success: false, error: `Unknown event type: ${eventName}` };
     }
   }
 
@@ -88,9 +89,9 @@ export class HookHandler {
     const { message } = hookData;
     
     await notifier.notify({
-      title: 'Claude Code 通知',
-      message: message || '收到通知',
-      subtitle: '需要注意'
+      title: i18n.t('notification.claude.title'),
+      message: message || i18n.t('notification.message.received'),
+      subtitle: i18n.t('notification.claude.subtitle')
     });
 
     return { success: true, eventType: 'Notification' };
@@ -99,8 +100,8 @@ export class HookHandler {
   async handleStop(hookData, notifier) {
     await notifier.notify({
       title: 'Claude Code',
-      message: '任务已完成',
-      subtitle: 'Claude 已停止工作'
+      message: i18n.t('notification.task.completed'),
+      subtitle: i18n.t('notification.claude.stopped')
     });
 
     return { success: true, eventType: 'Stop' };
@@ -109,8 +110,8 @@ export class HookHandler {
   async handleSubagentStop(hookData, notifier) {
     await notifier.notify({
       title: 'Claude Code',
-      message: '子任务已完成',
-      subtitle: '子代理已完成工作'
+      message: i18n.t('notification.subtask.completed'),
+      subtitle: i18n.t('notification.subagent.completed')
     });
 
     return { success: true, eventType: 'SubagentStop' };
@@ -121,7 +122,7 @@ export class HookHandler {
     
     await notifier.notify({
       title: 'Claude Code',
-      message: '新的提示已提交',
+      message: i18n.t('notification.prompt.submitted'),
       subtitle: prompt?.substring(0, 50) + (prompt?.length > 50 ? '...' : '')
     });
 
@@ -135,7 +136,7 @@ export class HookHandler {
     const importantTools = ['Bash', 'Write', 'Edit', 'MultiEdit'];
     
     if (importantTools.includes(toolName)) {
-      let message = `即将执行 ${toolName}`;
+      let message = i18n.t('notification.tool.about.to.execute', toolName);
       
       if (toolName === 'Bash' && toolInput?.command) {
         message += `: ${toolInput.command.substring(0, 30)}${toolInput.command.length > 30 ? '...' : ''}`;
@@ -146,7 +147,7 @@ export class HookHandler {
       await notifier.notify({
         title: 'Claude Code',
         message,
-        subtitle: '工具即将执行'
+        subtitle: i18n.t('notification.tool.executing')
       });
     }
 
@@ -164,8 +165,8 @@ export class HookHandler {
       
       await notifier.notify({
         title: 'Claude Code',
-        message: `${toolName} 执行${success ? '成功' : '失败'}`,
-        subtitle: success ? '工具执行完成' : '执行过程中出现错误'
+        message: success ? i18n.t('notification.tool.executed.success', toolName) : i18n.t('notification.tool.executed.failed', toolName),
+        subtitle: success ? i18n.t('notification.tool.execution.completed') : i18n.t('notification.tool.execution.error')
       });
     }
 
@@ -177,8 +178,8 @@ export class HookHandler {
     
     await notifier.notify({
       title: 'Claude Code',
-      message: `即将进行${trigger === 'auto' ? '自动' : '手动'}压缩`,
-      subtitle: '上下文即将被压缩'
+      message: trigger === 'auto' ? i18n.t('notification.compress.auto') : i18n.t('notification.compress.manual'),
+      subtitle: i18n.t('notification.compress.subtitle')
     });
 
     return { success: true, eventType: 'PreCompact' };
@@ -189,8 +190,8 @@ export class HookHandler {
     
     await notifier.notify({
       title: 'Claude Code',
-      message: '会话已开始',
-      subtitle: `启动方式: ${source}`
+      message: i18n.t('notification.session.started'),
+      subtitle: i18n.t('notification.session.start.source', source)
     });
 
     return { success: true, eventType: 'SessionStart' };
@@ -201,8 +202,8 @@ export class HookHandler {
     
     await notifier.notify({
       title: 'Claude Code',
-      message: '会话已结束',
-      subtitle: `结束原因: ${reason}`
+      message: i18n.t('notification.session.ended'),
+      subtitle: i18n.t('notification.session.end.reason', reason)
     });
 
     return { success: true, eventType: 'SessionEnd' };

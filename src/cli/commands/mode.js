@@ -1,11 +1,12 @@
 import { ConfigManager } from '../../config/manager.js';
 import { ConfigValidator } from '../../config/validator.js';
 import { Logger } from '../../utils/logger.js';
+import i18n from '../../utils/i18n.js';
 
 export function modeCommand(program) {
   program
     .command('mode [mode]')
-    .description('查看或设置工作模式 (normal|silent)')
+    .description(i18n.t('mode.description'))
     .action(async (mode) => {
       try {
         const configManager = new ConfigManager();
@@ -17,20 +18,20 @@ export function modeCommand(program) {
           const currentMode = currentConfig.mode;
           const modeIcon = currentMode === 'normal' ? '🔔' : '🔕';
           
-          Logger.info(`当前工作模式: ${modeIcon} ${currentMode.toUpperCase()}`);
+          Logger.info(i18n.t('mode.current', modeIcon, currentMode.toUpperCase()));
           
           if (currentMode === 'normal') {
-            Logger.info('通知功能已启用');
+            Logger.info(i18n.t('mode.notification.enabled'));
             const enabledCount = currentConfig.enabledEvents.length;
-            Logger.info(`已启用 ${enabledCount} 个事件通知`);
+            Logger.info(i18n.t('mode.events.count', enabledCount));
           } else {
-            Logger.info('通知功能已禁用（静音模式）');
+            Logger.info(i18n.t('mode.notification.disabled'));
           }
           
-          console.log('\n可用模式:');
+          console.log('\n' + i18n.t('mode.available'));
           ConfigValidator.VALID_MODES.forEach(validMode => {
             const icon = validMode === 'normal' ? '🔔' : '🔕';
-            const current = validMode === currentMode ? ' (当前)' : '';
+            const current = validMode === currentMode ? i18n.t('mode.current.suffix') : '';
             console.log(`  ${icon} ${validMode}${current}`);
           });
           
@@ -39,33 +40,33 @@ export function modeCommand(program) {
 
         // 设置模式
         if (!ConfigValidator.VALID_MODES.includes(mode)) {
-          Logger.error(`无效的模式: ${mode}`);
-          Logger.info(`有效模式: ${ConfigValidator.VALID_MODES.join(', ')}`);
+          Logger.error(i18n.t('mode.invalid', mode));
+          Logger.info(i18n.t('mode.valid.modes', ConfigValidator.VALID_MODES.join(', ')));
           process.exit(1);
         }
 
         const oldMode = configManager.getConfig().mode;
         
         if (oldMode === mode) {
-          Logger.info(`模式已经是 ${mode}`);
+          Logger.info(i18n.t('mode.already.set', mode));
           return;
         }
 
         await configManager.setMode(mode);
         
         const modeIcon = mode === 'normal' ? '🔔' : '🔕';
-        Logger.success(`${modeIcon} 模式已切换为: ${mode.toUpperCase()}`);
+        Logger.success(i18n.t('mode.switched', modeIcon, mode.toUpperCase()));
         
         if (mode === 'normal') {
-          Logger.info('通知功能已启用');
-          Logger.info('现在会接收 Claude Code 的通知');
+          Logger.info(i18n.t('mode.notification.enabled'));
+          Logger.info(i18n.t('mode.notification.will.receive'));
         } else {
-          Logger.info('通知功能已禁用');
-          Logger.info('所有通知将被忽略');
+          Logger.info(i18n.t('mode.notification.disabled'));
+          Logger.info(i18n.t('mode.notification.all.ignored'));
         }
 
       } catch (error) {
-        Logger.error('模式操作失败:', error.message);
+        Logger.error(i18n.t('mode.operation.failed', error.message));
         process.exit(1);
       }
     });
