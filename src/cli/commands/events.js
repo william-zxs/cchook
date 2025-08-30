@@ -1,26 +1,27 @@
 import { ConfigManager } from '../../config/manager.js';
 import { ConfigValidator } from '../../config/validator.js';
 import { Logger } from '../../utils/logger.js';
+import i18n from '../../utils/i18n.js';
 import { program as commanderProgram } from 'commander';
 
 export function eventsCommand(program) {
   const eventsCmd = program
     .command('events')
-    .description('管理事件通知');
+    .description(i18n.t('events.description'));
 
   eventsCmd
     .command('list')
-    .description('列出所有可用事件及其状态')
+    .description(i18n.t('events.list.description'))
     .action(listAction);
 
   eventsCmd
     .command('add <event>')
-    .description('启用指定事件的通知')
+    .description(i18n.t('events.add.description'))
     .action(addAction);
 
   eventsCmd
     .command('remove <event>')
-    .description('禁用指定事件的通知')
+    .description(i18n.t('events.remove.description'))
     .action(removeAction);
 }
 
@@ -30,12 +31,12 @@ async function listAction() {
     await configManager.loadConfig();
     const config = configManager.getConfig();
 
-    Logger.info('📋 Claude Code Hook 事件列表:');
+    Logger.info(i18n.t('events.title'));
     console.log('');
 
     ConfigValidator.VALID_EVENTS.forEach(event => {
       const isEnabled = config.enabledEvents.includes(event);
-      const status = isEnabled ? '✅ 已启用' : '❌ 已禁用';
+      const status = isEnabled ? i18n.t('events.enabled') : i18n.t('events.disabled');
       const description = getEventDescription(event);
       
       console.log(`${status} ${event}`);
@@ -46,14 +47,14 @@ async function listAction() {
     const enabledCount = config.enabledEvents.length;
     const totalCount = ConfigValidator.VALID_EVENTS.length;
     
-    Logger.info(`总计: ${enabledCount}/${totalCount} 个事件已启用`);
+    Logger.info(i18n.t('events.enabled.count', enabledCount, totalCount));
     
     if (config.mode === 'silent') {
-      Logger.warning('⚠️  当前为静音模式，所有通知被禁用');
+      Logger.warning(i18n.t('mode.notification.disabled'));
     }
 
   } catch (error) {
-    Logger.error('获取事件列表失败:', error.message);
+    Logger.error(i18n.t('events.list.failed'), error.message);
     process.exit(1);
   }
 }
@@ -61,8 +62,8 @@ async function listAction() {
 async function addAction(eventName) {
   try {
     if (!ConfigValidator.VALID_EVENTS.includes(eventName)) {
-      Logger.error(`无效的事件名称: ${eventName}`);
-      Logger.info(`有效事件: ${ConfigValidator.VALID_EVENTS.join(', ')}`);
+      Logger.error(i18n.t('events.invalid', eventName));
+      Logger.info(i18n.t('events.valid.list', ConfigValidator.VALID_EVENTS.join(', ')));
       process.exit(1);
     }
 
@@ -71,16 +72,16 @@ async function addAction(eventName) {
     
     const config = configManager.getConfig();
     if (config.enabledEvents.includes(eventName)) {
-      Logger.info(`事件 ${eventName} 已经启用`);
+      Logger.info(i18n.t('events.already.enabled', eventName));
       return;
     }
 
     await configManager.addEvent(eventName);
-    Logger.success(`🔔 已启用事件: ${eventName}`);
+    Logger.success(i18n.t('events.enabled', eventName));
     Logger.info(getEventDescription(eventName));
 
   } catch (error) {
-    Logger.error('启用事件失败:', error.message);
+    Logger.error(i18n.t('events.add.failed'), error.message);
     process.exit(1);
   }
 }
@@ -88,8 +89,8 @@ async function addAction(eventName) {
 async function removeAction(eventName) {
   try {
     if (!ConfigValidator.VALID_EVENTS.includes(eventName)) {
-      Logger.error(`无效的事件名称: ${eventName}`);
-      Logger.info(`有效事件: ${ConfigValidator.VALID_EVENTS.join(', ')}`);
+      Logger.error(i18n.t('events.invalid', eventName));
+      Logger.info(i18n.t('events.valid.list', ConfigValidator.VALID_EVENTS.join(', ')));
       process.exit(1);
     }
 
@@ -98,31 +99,19 @@ async function removeAction(eventName) {
     
     const config = configManager.getConfig();
     if (!config.enabledEvents.includes(eventName)) {
-      Logger.info(`事件 ${eventName} 已经禁用`);
+      Logger.info(i18n.t('events.not.enabled', eventName));
       return;
     }
 
     await configManager.removeEvent(eventName);
-    Logger.success(`🔕 已禁用事件: ${eventName}`);
+    Logger.success(i18n.t('events.disabled', eventName));
 
   } catch (error) {
-    Logger.error('禁用事件失败:', error.message);
+    Logger.error(i18n.t('events.remove.failed'), error.message);
     process.exit(1);
   }
 }
 
 function getEventDescription(eventName) {
-  const descriptions = {
-    'Notification': 'Claude Code 发送的系统通知',
-    'Stop': 'Claude 完成主要任务时的通知',
-    'SubagentStop': '子任务或子代理完成时的通知',
-    'UserPromptSubmit': '用户提交新提示时的通知',
-    'PreToolUse': '工具执行前的通知（如 Bash、Write 等）',
-    'PostToolUse': '工具执行后的通知',
-    'PreCompact': '上下文压缩前的通知',
-    'SessionStart': '会话开始时的通知',
-    'SessionEnd': '会话结束时的通知'
-  };
-  
-  return descriptions[eventName] || '未知事件';
+  return i18n.t(`event.description.${eventName}`, i18n.t('event.description.unknown'));
 }

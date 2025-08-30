@@ -8,20 +8,20 @@ import chalk from 'chalk';
 export function logsCommand(program) {
   program
     .command('logs')
-    .description('查看 hook 调用日志')
-    .option('-f, --follow', '实时跟踪日志')
-    .option('-n, --lines <number>', '显示最后 N 行', '50')
-    .option('-c, --clear', '清空日志文件')
+    .description('View hook call logs')
+    .option('-f, --follow', 'Follow logs in real time')
+    .option('-n, --lines <number>', 'Show last N lines', '50')
+    .option('-c, --clear', 'Clear log file')
     .action(async (options) => {
       const logFile = path.join(os.homedir(), '.cchook', 'hooks.log');
       
       if (options.clear) {
         try {
           await fs.writeFile(logFile, '');
-          Logger.success('日志已清空');
+          Logger.success('Log cleared');
           return;
         } catch (error) {
-          Logger.error('清空日志失败:', error.message);
+          Logger.error('Failed to clear log:', error.message);
           return;
         }
       }
@@ -31,14 +31,14 @@ export function logsCommand(program) {
         try {
           await fs.access(logFile);
         } catch (error) {
-          Logger.warning('日志文件不存在。Hook 可能尚未被调用。');
-          Logger.info(`日志文件位置: ${logFile}`);
+          Logger.warning('Log file does not exist. Hooks may not have been called yet.');
+          Logger.info(`Log file location: ${logFile}`);
           return;
         }
         
         if (options.follow) {
-          Logger.info('实时跟踪日志... (按 Ctrl+C 退出)');
-          Logger.info(`日志文件: ${logFile}`);
+          Logger.info('Following logs in real time... (Press Ctrl+C to exit)');
+          Logger.info(`Log file: ${logFile}`);
           console.log('');
           
           // 显示现有内容
@@ -85,7 +85,7 @@ export function logsCommand(program) {
           // 处理退出
           process.on('SIGINT', () => {
             clearInterval(interval);
-            Logger.info('\n日志跟踪已停止');
+            Logger.info('\nLog following stopped');
             process.exit(0);
           });
           
@@ -97,7 +97,7 @@ export function logsCommand(program) {
         }
         
       } catch (error) {
-        Logger.error('读取日志失败:', error.message);
+        Logger.error('Failed to read log:', error.message);
       }
     });
 }
@@ -108,19 +108,19 @@ async function showLogContent(logFile, lines) {
     const allLines = content.split('\n').filter(line => line.trim());
     
     if (allLines.length === 0) {
-      Logger.info('日志文件为空');
+      Logger.info('Log file is empty');
       return;
     }
     
     const displayLines = allLines.slice(-lines);
     
-    Logger.info(`显示最后 ${displayLines.length} 行日志:`);
+    Logger.info(`Showing last ${displayLines.length} log entries:`);
     console.log('');
     
     displayLines.forEach(line => formatLogLine(line));
     
   } catch (error) {
-    Logger.error('读取日志内容失败:', error.message);
+    Logger.error('Failed to read log content:', error.message);
   }
 }
 
@@ -141,11 +141,11 @@ function formatLogLine(line) {
       );
       
       if (logEntry.result.error) {
-        console.log(chalk.red('  错误:'), logEntry.result.error);
+        console.log(chalk.red('  Error:'), logEntry.result.error);
       }
       
       if (logEntry.result.skipped) {
-        console.log(chalk.yellow('  跳过: 事件未启用或处于静音模式'));
+        console.log(chalk.yellow('  Skipped: Event not enabled or in silent mode'));
       }
       
     } else {
