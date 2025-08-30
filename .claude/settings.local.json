@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(timeout:*)",
+      "Bash(gtimeout:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(for file in *.jsx)",
+      "Bash(do mv \"$file\" \"$file%.jsx.js\")",
+      "Bash(done)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
