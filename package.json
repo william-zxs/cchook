@@ -1,0 +1,43 @@
+{
+  "name": "cchook",
+  "version": "1.0.0",
+  "description": "Claude Code hook management tool with TUI interface",
+  "main": "src/index.js",
+  "bin": {
+    "cchook": "./bin/cchook.js"
+  },
+  "scripts": {
+    "start": "node bin/cchook.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test:coverage": "npm run test -- --coverage",
+    "test:watch": "npm run test -- --watch",
+    "dev": "node bin/cchook.js"
+  },
+  "keywords": [
+    "claude-code",
+    "hooks",
+    "tui",
+    "notification",
+    "macos"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ink": "^4.4.1",
+    "react": "^18.2.0",
+    "commander": "^11.0.0",
+    "fs-extra": "^11.1.1",
+    "chalk": "^5.3.0",
+    "figures": "^5.0.0",
+    "import-jsx": "^5.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@babel/preset-env": "^7.22.0",
+    "@babel/preset-react": "^7.22.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "type": "module"
+}
