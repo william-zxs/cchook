@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import os from 'os';
 import { Logger } from '../../utils/logger.js';
@@ -43,26 +44,53 @@ export function logsCommand(program) {
           // 显示现有内容
           await showLogContent(logFile, parseInt(options.lines));
           
-          // 监听文件变化
-          const watcher = fs.watchFile(logFile, { interval: 1000 }, async () => {
+          // 使用轮询方式监控文件变化
+          let lastPosition = 0;
+          try {
+            const stats = await fs.stat(logFile);
+            lastPosition = stats.size;
+          } catch (error) {
+            // 文件可能不存在
+          }
+          
+          const checkForUpdates = async () => {
             try {
-              const content = await fs.readFile(logFile, 'utf8');
-              const lines = content.split('\n').filter(line => line.trim());
-              if (lines.length > 0) {
-                const lastLine = lines[lines.length - 1];
-                formatLogLine(lastLine);
+              const stats = await fs.stat(logFile);
+              if (stats.size > lastPosition) {
+                // 读取新增的内容
+                const buffer = Buffer.alloc(stats.size - lastPosition);
+                const fd = await fs.open(logFile, 'r');
+                await fd.read(buffer, 0, stats.size - lastPosition, lastPosition);
+                await fd.close();
+                
+                const newContent = buffer.toString('utf8');
+                const newLines = newContent.split('\n').filter(line => line.trim());
+                
+                newLines.forEach(line => {
+                  if (line.trim()) {
+                    formatLogLine(line);
+                  }
+                });
+                
+                lastPosition = stats.size;
               }
             } catch (error) {
-              // 忽略读取错误
+              // 忽略错误，继续轮询
             }
-          });
+          };
+          
+          // 每秒检查一次
+          const interval = setInterval(checkForUpdates, 1000);
           
           // 处理退出
           process.on('SIGINT', () => {
-            fs.unwatchFile(logFile);
+            clearInterval(interval);
             Logger.info('\n日志跟踪已停止');
             process.exit(0);
           });
+          
+          // 保持进程运行
+          process.stdin.resume();
           
         } else {
           await showLogContent(logFile, parseInt(options.lines));
