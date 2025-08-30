@@ -22,7 +22,7 @@ const { version } = require('../package.json');
 
 program
   .name('cchook')
-  .description('Claude Code hook management tool with TUI interface')
+  .description('Claude Code hook management tool')
   .version(version);
 
 // 如果没有参数且 stdin 有数据，则处理 hook 输入
@@ -39,29 +39,5 @@ statusCommand(program);
 testCommand(program);
 logsCommand(program);
 
-// 默认命令 - 启动 TUI
-program
-  .command('tui')
-  .description('Launch interactive TUI interface')
-  .action(async () => {
-    try {
-      const { default: React } = await import('react');
-      const { render } = await import('ink');
-      
-      // 直接导入转换后的 JS 文件
-      const { default: MainApp } = await import(`file://${path.resolve(__dirname, '../src/cli/tui/MainApp.js')}`);
-      
-      render(React.createElement(MainApp));
-    } catch (error) {
-      console.error('启动 TUI 失败:', error.message);
-      console.error(error.stack);
-      process.exit(1);
-    }
-  });
-
-// 如果没有指定命令，默认启动 TUI
-if (process.argv.length === 2) {
-  program.parse(['node', 'cchook', 'tui']);
-} else {
-  program.parse();
-}
+// 解析命令行参数
+program.parse();
