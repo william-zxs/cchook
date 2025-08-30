@@ -8,6 +8,7 @@ export class HookHandler {
   }
 
   async processHookEvent(hookData) {
+    let result;
     try {
       // 加载配置
       await this.configManager.loadConfig();
@@ -15,14 +16,18 @@ export class HookHandler {
       const { hook_event_name: eventName } = hookData;
       
       if (!eventName) {
+        result = { success: false, error: '缺少事件名称' };
         Logger.error('缺少 hook_event_name 字段');
-        return { success: false, error: '缺少事件名称' };
+        await Logger.hookLog(eventName || 'UNKNOWN', hookData, result);
+        return result;
       }
 
       // 检查事件是否启用
       if (!this.configManager.isEventEnabled(eventName)) {
+        result = { success: true, skipped: true };
         Logger.debug(`事件 ${eventName} 未启用或处于静音模式`);
-        return { success: true, skipped: true };
+        await Logger.hookLog(eventName, hookData, result);
+        return result;
       }
 
       // 获取通知配置
@@ -30,14 +35,17 @@ export class HookHandler {
       const notifier = NotificationFactory.create(notificationConfig.type, notificationConfig);
 
       // 根据事件类型处理
-      const result = await this.handleEventType(eventName, hookData, notifier);
+      result = await this.handleEventType(eventName, hookData, notifier);
       
       Logger.debug(`事件 ${eventName} 处理完成:`, result);
+      await Logger.hookLog(eventName, hookData, result);
       return result;
 
     } catch (error) {
+      result = { success: false, error: error.message };
       Logger.error('处理 hook 事件失败:', error);
-      return { success: false, error: error.message };
+      await Logger.hookLog(hookData?.hook_event_name || 'UNKNOWN', hookData, result);
+      return result;
     }
   }
 
