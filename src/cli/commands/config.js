@@ -1,25 +1,26 @@
 import { ConfigManager } from '../../config/manager.js';
+import i18n from '../../utils/i18n.js';
 
 export function configCommand(program) {
   const configCmd = program
     .command('config')
     .alias('c')
-    .description('配置管理');
+    .description(i18n.t('config.description'));
 
   // 设置钉钉配置
   configCmd
     .command('dingtalk')
     .alias('dt')
-    .description('配置钉钉机器人')
-    .requiredOption('--access-token <token>', '机器人webhook的access_token')
-    .requiredOption('--secret <secret>', '机器人安全设置的加签secret')
+    .description(i18n.t('config.dingtalk.description'))
+    .requiredOption('--access-token <token>', i18n.t('config.dingtalk.access.token'))
+    .requiredOption('--secret <secret>', i18n.t('config.dingtalk.secret'))
     .action(async (options) => {
       try {
         const configManager = new ConfigManager();
         await configManager.setDingTalkConfig(options.accessToken, options.secret);
-        console.log('✅ 钉钉配置已保存到 ~/.cchook/config.json');
+        console.log(i18n.t('config.dingtalk.saved'));
       } catch (error) {
-        console.error('❌ 配置钉钉失败:', error.message);
+        console.error(i18n.t('config.dingtalk.failed', error.message));
         process.exit(1);
       }
     });
@@ -28,10 +29,10 @@ export function configCommand(program) {
   configCmd
     .command('macos')
     .alias('mac')
-    .description('配置 macOS 系统通知')
-    .option('--title <title>', '通知标题', '钉钉机器人通知')
-    .option('--subtitle <subtitle>', '通知副标题', '')
-    .option('--sound [enabled]', '是否播放声音', true)
+    .description(i18n.t('config.macos.description'))
+    .option('--title <title>', i18n.t('config.macos.title'), i18n.isChinese() ? '钉钉机器人通知' : 'DingTalk Robot Notification')
+    .option('--subtitle <subtitle>', i18n.t('config.macos.subtitle'), '')
+    .option('--sound [enabled]', i18n.t('config.macos.sound'), true)
     .action(async (options) => {
       try {
         const configManager = new ConfigManager();
@@ -41,9 +42,9 @@ export function configCommand(program) {
           sound: options.sound !== false
         };
         await configManager.setMacOSConfig(macosConfig);
-        console.log('✅ macOS 通知配置已保存');
+        console.log(i18n.t('config.macos.saved'));
       } catch (error) {
-        console.error('❌ 配置 macOS 通知失败:', error.message);
+        console.error(i18n.t('config.macos.failed', error.message));
         process.exit(1);
       }
     });
@@ -52,43 +53,43 @@ export function configCommand(program) {
   configCmd
     .command('show')
     .alias('s')
-    .description('显示当前配置')
+    .description(i18n.t('config.show.description'))
     .action(async () => {
       try {
         const configManager = new ConfigManager();
         await configManager.loadConfig();
         const config = configManager.getConfig();
         
-        console.log('\n📋 当前配置:');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('\n' + i18n.t('config.show.title'));
+        console.log(i18n.t('config.show.separator'));
         
         // 钉钉配置
         const dingtalkConfig = configManager.getDingTalkConfig();
-        console.log('\n🔔 钉钉机器人配置:');
-        console.log(`  Access Token: ${dingtalkConfig.accessToken ? '已设置' : '❌ 未设置'}`);
-        console.log(`  Secret: ${dingtalkConfig.secret ? '已设置' : '❌ 未设置'}`);
+        console.log('\n' + i18n.t('config.show.dingtalk.title'));
+        console.log(i18n.t('config.show.dingtalk.token', dingtalkConfig.accessToken ? i18n.t('config.show.dingtalk.configured') : i18n.t('config.show.dingtalk.not.configured')));
+        console.log(i18n.t('config.show.dingtalk.secret', dingtalkConfig.secret ? i18n.t('config.show.dingtalk.configured') : i18n.t('config.show.dingtalk.not.configured')));
         
         // macOS 配置
         const macosConfig = configManager.getMacOSConfig();
-        console.log('\n🍎 macOS 通知配置:');
-        console.log(`  标题: ${macosConfig.title}`);
-        console.log(`  副标题: ${macosConfig.subtitle || '无'}`);
-        console.log(`  声音: ${macosConfig.sound ? '启用' : '禁用'}`);
+        console.log('\n' + i18n.t('config.show.macos.title'));
+        console.log(i18n.t('config.show.macos.title.value', macosConfig.title));
+        console.log(i18n.t('config.show.macos.subtitle.value', macosConfig.subtitle || i18n.t('config.show.macos.subtitle.none')));
+        console.log(i18n.t('config.show.macos.sound.value', macosConfig.sound ? i18n.t('config.show.macos.sound.enabled') : i18n.t('config.show.macos.sound.disabled')));
         
         // 默认通知类型
         const defaultTypes = configManager.getDefaultNotificationTypes();
-        console.log('\n🎯 默认通知类型:');
+        console.log('\n' + i18n.t('config.show.default.types.title'));
         console.log(`  ${defaultTypes.join(', ')}`);
         
         // 其他配置
-        console.log('\n⚙️  其他配置:');
-        console.log(`  模式: ${config.mode}`);
-        console.log(`  启用事件: ${config.enabledEvents.join(', ')}`);
-        console.log(`  通知类型: ${config.notifications.type}`);
+        console.log('\n' + i18n.t('config.show.other.title'));
+        console.log(i18n.t('config.show.mode', config.mode));
+        console.log(i18n.t('config.show.enabled.events', config.enabledEvents.join(', ')));
+        console.log(i18n.t('config.show.notification.type', config.notifications.type));
         
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+        console.log(i18n.t('config.show.separator') + '\n');
       } catch (error) {
-        console.error('❌ 显示配置失败:', error.message);
+        console.error(i18n.t('config.show.failed', error.message));
         process.exit(1);
       }
     });
@@ -97,12 +98,12 @@ export function configCommand(program) {
   configCmd
     .command('reset')
     .alias('r')
-    .description('重置配置到默认值')
-    .option('--confirm', '确认重置（必需）')
+    .description(i18n.t('config.reset.description'))
+    .option('--confirm', i18n.t('config.reset.confirm'))
     .action(async (options) => {
       if (!options.confirm) {
-        console.log('⚠️  此操作将重置所有配置到默认值');
-        console.log('如需确认，请使用: cchook config reset --confirm');
+        console.log(i18n.t('config.reset.warning'));
+        console.log(i18n.t('config.reset.instruction'));
         return;
       }
       
@@ -111,9 +112,9 @@ export function configCommand(program) {
         // 强制使用默认配置
         configManager.config = null;
         await configManager.loadConfig();
-        console.log('✅ 配置已重置到默认值');
+        console.log(i18n.t('config.reset.success'));
       } catch (error) {
-        console.error('❌ 重置配置失败:', error.message);
+        console.error(i18n.t('config.reset.failed', error.message));
         process.exit(1);
       }
     });
@@ -122,16 +123,16 @@ export function configCommand(program) {
   configCmd
     .command('types')
     .alias('t')
-    .description('设置默认通知类型')
-    .requiredOption('--set <types>', '通知类型，多个用逗号分隔 (dingtalk,macos)')
+    .description(i18n.t('config.types.description'))
+    .requiredOption('--set <types>', i18n.t('config.types.set'))
     .action(async (options) => {
       try {
         const configManager = new ConfigManager();
         const types = options.set.split(',').map(type => type.trim());
         await configManager.setDefaultNotificationTypes(types);
-        console.log(`✅ 默认通知类型已设置为: ${types.join(', ')}`);
+        console.log(i18n.t('config.types.success', types.join(', ')));
       } catch (error) {
-        console.error('❌ 设置默认通知类型失败:', error.message);
+        console.error(i18n.t('config.types.failed', error.message));
         process.exit(1);
       }
     });
@@ -140,20 +141,20 @@ export function configCommand(program) {
   configCmd
     .command('list-types')
     .alias('lt')
-    .description('列出所有可用的通知类型')
+    .description(i18n.t('config.list.types.description'))
     .action(() => {
-      console.log('\n📋 可用的通知类型:');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('🔔 dingtalk  - 钉钉机器人通知');
-      console.log('🍎 macos     - macOS 系统通知');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('\n💡 使用方法:');
-      console.log('  # 设置单个默认类型');
-      console.log('  cchook config types --set dingtalk');
-      console.log('\n  # 设置多个默认类型');
-      console.log('  cchook config types --set "dingtalk,macos"');
-      console.log('\n  # 临时指定类型');
-      console.log('  cchook notify --types "dingtalk,macos" --msg "消息内容"');
+      console.log('\n' + i18n.t('config.list.types.title'));
+      console.log(i18n.t('config.show.separator'));
+      console.log(i18n.t('config.list.types.dingtalk'));
+      console.log(i18n.t('config.list.types.macos'));
+      console.log(i18n.t('config.show.separator'));
+      console.log('\n' + i18n.t('config.list.types.usage.title'));
+      console.log(i18n.t('config.list.types.usage.single'));
+      console.log(i18n.t('config.list.types.usage.single.example'));
+      console.log('\n' + i18n.t('config.list.types.usage.multiple'));
+      console.log(i18n.t('config.list.types.usage.multiple.example'));
+      console.log('\n' + i18n.t('config.list.types.usage.temporary'));
+      console.log(i18n.t('config.list.types.usage.temporary.example'));
       console.log('');
     });
 }
