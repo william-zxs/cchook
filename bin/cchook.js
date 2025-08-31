@@ -17,6 +17,8 @@ import { statusCommand } from '../src/cli/commands/status.js';
 import { testCommand } from '../src/cli/commands/test.js';
 import { logsCommand } from '../src/cli/commands/logs.js';
 import { handleHookInput } from '../src/hook/handler.js';
+import { notifyCommand } from '../src/cli/commands/notify.js';
+import { configCommand } from '../src/cli/commands/config.js';
 
 const { version } = require('../package.json');
 
@@ -38,6 +40,8 @@ eventsCommand(program);
 statusCommand(program);
 testCommand(program);
 logsCommand(program);
+notifyCommand(program);
+configCommand(program);
 
 // 解析命令行参数
 program.parse();

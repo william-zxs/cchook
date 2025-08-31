@@ -166,4 +166,89 @@ export class ConfigManager {
     
     return this.config.notifications;
   }
+
+  async setDingTalkConfig(accessToken, secret) {
+    if (!this.config) {
+      await this.loadConfig();
+    }
+    
+    if (!this.config.notifications) {
+      this.config.notifications = ConfigValidator.getDefaultConfig().notifications;
+    }
+    
+    if (!this.config.notifications.dingtalk) {
+      this.config.notifications.dingtalk = { accessToken: '', secret: '' };
+    }
+    
+    this.config.notifications.dingtalk.accessToken = accessToken;
+    this.config.notifications.dingtalk.secret = secret;
+    
+    await this.saveConfig();
+    Logger.success('钉钉配置已更新');
+  }
+
+  getDingTalkConfig() {
+    if (!this.config?.notifications?.dingtalk) {
+      return { accessToken: '', secret: '' };
+    }
+    
+    return this.config.notifications.dingtalk;
+  }
+
+  async setMacOSConfig(options = {}) {
+    if (!this.config) {
+      await this.loadConfig();
+    }
+    
+    if (!this.config.notifications) {
+      this.config.notifications = ConfigValidator.getDefaultConfig().notifications;
+    }
+    
+    if (!this.config.notifications.macos) {
+      this.config.notifications.macos = ConfigValidator.getDefaultConfig().notifications.macos;
+    }
+    
+    Object.assign(this.config.notifications.macos, options);
+    
+    await this.saveConfig();
+    Logger.success('macOS 通知配置已更新');
+  }
+
+  getMacOSConfig() {
+    if (!this.config?.notifications?.macos) {
+      return ConfigValidator.getDefaultConfig().notifications.macos;
+    }
+    
+    return this.config.notifications.macos;
+  }
+
+  async setDefaultNotificationTypes(types) {
+    if (!this.config) {
+      await this.loadConfig();
+    }
+    
+    if (!this.config.notifications) {
+      this.config.notifications = ConfigValidator.getDefaultConfig().notifications;
+    }
+    
+    const validTypes = ['dingtalk', 'macos'];
+    const filteredTypes = types.filter(type => validTypes.includes(type));
+    
+    if (filteredTypes.length === 0) {
+      throw new Error(`无效的通知类型。有效值: ${validTypes.join(', ')}`);
+    }
+    
+    this.config.notifications.defaultTypes = filteredTypes;
+    
+    await this.saveConfig();
+    Logger.success(`默认通知类型已设置为: ${filteredTypes.join(', ')}`);
+  }
+
+  getDefaultNotificationTypes() {
+    if (!this.config?.notifications?.defaultTypes) {
+      return ConfigValidator.getDefaultConfig().notifications.defaultTypes;
+    }
+    
+    return this.config.notifications.defaultTypes;
+  }
 }
