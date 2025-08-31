@@ -64,13 +64,19 @@ export function statusCommand(program) {
         // 通知配置
         const notificationType = config.notifications?.type || 'unknown';
         const displayNotificationType = getDisplayNotificationType(notificationType);
-        console.log(i18n.t('status.notification.type', chalk.blue(displayNotificationType)));
+        console.log(i18n.t('status.notification.type', chalk.green(displayNotificationType)));
 
-        // 启用事件数量
+        // 启用的事件
         const enabledCount = config.enabledEvents.length;
         const totalEvents = 9; // 总事件数
         const eventsColor = enabledCount > 0 ? 'green' : 'red';
-        console.log(i18n.t('status.enabled.events', chalk[eventsColor](enabledCount), chalk[eventsColor](totalEvents)));
+        
+        if (enabledCount > 0) {
+          const eventsList = config.enabledEvents.join(', ');
+          console.log(i18n.t('status.enabled.events.names', chalk[eventsColor](eventsList)));
+        } else {
+          console.log(i18n.t('status.enabled.events.none'));
+        }
 
         console.log('');
 
