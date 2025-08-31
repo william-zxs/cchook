@@ -55,6 +55,9 @@ const messages = {
     'status.success.normal': '[SUCCESS] 系统运行正常，可以接收通知',
     'status.suggestion.setup': '[TIP] 建议操作: 运行 `cchook setup` 初始化配置',
     'status.suggestion.enable': '[TIP] 建议操作: 运行 `cchook events add Notification` 启用基本通知',
+    'status.suggestion.mode.normal': '[TIP] 建议操作: 运行 `cchook mode normal` 启用通知',
+    'status.suggestion.test': '[TIP] 建议操作: 运行 `cchook test` 测试通知功能',
+    'status.error.load.failed': '获取状态信息失败:',
 
     // Setup command
     'setup.description': '初始化配置并安装 hooks 到 Claude Code',
@@ -310,6 +313,9 @@ const messages = {
     'status.success.normal': '[SUCCESS] System running normally, ready to receive notifications',
     'status.suggestion.setup': '[TIP] Suggestion: Run `cchook setup` to initialize configuration',
     'status.suggestion.enable': '[TIP] Suggestion: Run `cchook events add Notification` to enable basic notifications',
+    'status.suggestion.mode.normal': '[TIP] Suggestion: Run `cchook mode normal` to enable notifications',
+    'status.suggestion.test': '[TIP] Suggestion: Run `cchook test` to test notification functionality',
+    'status.error.load.failed': 'Failed to get status information:',
 
     // Setup command  
     'setup.description': 'Initialize configuration and install hooks to Claude Code',

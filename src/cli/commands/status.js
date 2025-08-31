@@ -89,11 +89,11 @@ export function statusCommand(program) {
           FileSystemUtils.getClaudeSettingsPath()
         );
 
-        console.log(chalk.white('cchook 配置: ') + 
-          (cchookConfigExists ? chalk.green('存在') : chalk.red('不存在')));
+        console.log(i18n.t('status.config.cchook', 
+          (cchookConfigExists ? chalk.green(i18n.t('status.config.exists')) : chalk.red(i18n.t('status.config.not.exists')))));
         
-        console.log(chalk.white('Claude Code 配置: ') + 
-          (claudeConfigExists ? chalk.green('存在') : chalk.yellow('不存在')));
+        console.log(i18n.t('status.config.claude', 
+          (claudeConfigExists ? chalk.green(i18n.t('status.config.exists')) : chalk.yellow(i18n.t('status.config.not.exists')))));
 
         if (options.verbose) {
           console.log('');
@@ -105,7 +105,7 @@ export function statusCommand(program) {
 
         // 详细信息
         if (options.verbose) {
-          console.log(chalk.blue.bold('详细配置'));
+          console.log(chalk.blue.bold(i18n.t('status.detailed.title')));
           
           // 启用的事件列表
           if (config.enabledEvents.length > 0) {
@@ -146,16 +146,16 @@ export function statusCommand(program) {
           console.log('');
 
           // 系统信息
-          console.log(chalk.blue.bold('系统信息'));
-          console.log(chalk.white('平台: ') + process.platform);
-          console.log(chalk.white('Node.js: ') + process.version);
-          console.log(chalk.white('工作目录: ') + chalk.gray(process.cwd()));
+          console.log(chalk.blue.bold(i18n.t('status.system.info.title')));
+          console.log(i18n.t('status.platform', process.platform));
+          console.log(i18n.t('status.node.version', process.version));
+          console.log(i18n.t('status.working.directory', chalk.gray(process.cwd())));
           
           if (config.createdAt) {
-            console.log(chalk.white('配置创建: ') + chalk.gray(new Date(config.createdAt).toLocaleString()));
+            console.log(i18n.t('status.created.at', chalk.gray(new Date(config.createdAt).toLocaleString())));
           }
           if (config.updatedAt) {
-            console.log(chalk.white('最后更新: ') + chalk.gray(new Date(config.updatedAt).toLocaleString()));
+            console.log(i18n.t('status.updated.at', chalk.gray(new Date(config.updatedAt).toLocaleString())));
           }
         }
 
@@ -178,13 +178,13 @@ export function statusCommand(program) {
         } else if (enabledCount === 0) {
           console.log(i18n.t('status.suggestion.enable'));
         } else if (config.mode === 'silent') {
-          console.log(chalk.cyan('建议操作: ') + '运行 `cchook mode normal` 启用通知');
+          console.log(i18n.t('status.suggestion.mode.normal'));
         } else {
-          console.log(chalk.cyan('建议操作: ') + '运行 `cchook test` 测试通知功能');
+          console.log(i18n.t('status.suggestion.test'));
         }
 
       } catch (error) {
-        Logger.error('获取状态信息失败:', error.message);
+        Logger.error(i18n.t('status.error.load.failed'), error.message);
         process.exit(1);
       }
     });
