@@ -25,21 +25,21 @@ export function testCommand(program) {
 }
 
 async function testCurrentConfig() {
-  Logger.info('🧪 Testing current notification configuration...');
+  Logger.info('[TEST] Testing current notification configuration...');
   
   try {
     const configManager = new ConfigManager();
     const config = await configManager.loadConfig();
     
     if (config.mode === 'silent') {
-      Logger.warning('🔕 Currently in silent mode, notifications are disabled');
-      Logger.info('💡 Run `cchook mode normal` to enable notifications');
+      Logger.warning('Currently in silent mode, notifications are disabled');
+      Logger.info('Run `cchook mode normal` to enable notifications');
       return;
     }
 
     if (config.enabledEvents.length === 0) {
-      Logger.warning('⚠️  No events are enabled');
-      Logger.info('💡 Run `cchook events add Notification` to enable basic notifications');
+      Logger.warning('No events are enabled');
+      Logger.info('Run `cchook events add Notification` to enable basic notifications');
       return;
     }
 
@@ -55,14 +55,14 @@ async function testCurrentConfig() {
     });
     
     if (result.success) {
-      Logger.success(`✅ ${notificationConfig.type} notification test successful`);
+      Logger.success(`${notificationConfig.type} notification test successful`);
       Logger.info('If you saw the notification, the configuration is working properly');
     } else {
-      Logger.error(`❌ ${notificationConfig.type} notification test failed: ${result.error}`);
+      Logger.error(`[FAILED] ${notificationConfig.type} notification test failed: ${result.error}`);
       
       // 提供故障排除建议
       if (notificationConfig.type === 'osascript' && process.platform !== 'darwin') {
-        Logger.warning('💡 osascript is only available on macOS');
+        Logger.warning('[NOTE] osascript is only available on macOS');
         Logger.info('Recommend switching to console notifications: cchook setup');
       }
     }
@@ -73,7 +73,7 @@ async function testCurrentConfig() {
 }
 
 async function testSpecificNotifier(type) {
-  Logger.info(`🧪 Testing ${type} notifications...`);
+  Logger.info(`[TEST] Testing ${type} notifications...`);
   
   const supportedTypes = NotificationFactory.getSupportedTypes();
   
@@ -87,16 +87,16 @@ async function testSpecificNotifier(type) {
     const result = await NotificationFactory.testNotifier(type);
     
     if (result.success) {
-      Logger.success(`✅ ${type} notification test successful`);
+      Logger.success(`[SUCCESS] ${type} notification test successful`);
     } else {
-      Logger.error(`❌ ${type} notification test failed: ${result.error}`);
+      Logger.error(`[FAILED] ${type} notification test failed: ${result.error}`);
       
       // 针对不同类型提供建议
       if (type === 'osascript') {
         if (process.platform !== 'darwin') {
-          Logger.warning('💡 osascript is only available on macOS');
+          Logger.warning('[NOTE] osascript is only available on macOS');
         } else {
-          Logger.info('💡 Please check if system notification settings allow terminal apps to send notifications');
+          Logger.info('[NOTE] Please check if system notification settings allow terminal apps to send notifications');
         }
       }
     }
@@ -106,7 +106,7 @@ async function testSpecificNotifier(type) {
 }
 
 async function testAllNotifiers() {
-  Logger.info('🧪 Testing all notification types...');
+  Logger.info('[TEST] Testing all notification types...');
   console.log('');
   
   const supportedTypes = NotificationFactory.getSupportedTypes();
@@ -126,9 +126,9 @@ async function testAllNotifiers() {
       results.push({ type, success: result.success, error: result.error });
       
       if (result.success) {
-        Logger.success(`✅ ${type} test successful`);
+        Logger.success(`[SUCCESS] ${type} test successful`);
       } else {
-        Logger.error(`❌ ${type} test failed: ${result.error}`);
+        Logger.error(`[FAILED] ${type} test failed: ${result.error}`);
       }
       
       // 在测试之间稍作延迟，避免通知过于密集
@@ -144,7 +144,7 @@ async function testAllNotifiers() {
   
   // 测试总结
   console.log('');
-  Logger.info('📊 Test Summary:');
+  Logger.info('=== Test Summary ===');
   
   const successful = results.filter(r => r.success).length;
   const total = results.length;
@@ -152,7 +152,7 @@ async function testAllNotifiers() {
   console.log(`Successful: ${successful}/${total}`);
   
   results.forEach(result => {
-    const status = result.success ? '✅' : '❌';
+    const status = result.success ? '[SUCCESS]' : '[FAILED]';
     console.log(`  ${status} ${result.type}`);
     if (!result.success && result.error) {
       console.log(`    Error: ${result.error}`);
@@ -160,9 +160,9 @@ async function testAllNotifiers() {
   });
   
   if (successful > 0) {
-    Logger.success('🎉 At least one notification type works properly');
+    Logger.success('[SUCCESS] At least one notification type works properly');
   } else {
-    Logger.warning('⚠️  No notification types work properly, please check system settings');
+    Logger.warning('[WARNING] No notification types work properly, please check system settings');
   }
   
   // 推荐最佳通知类型
@@ -172,7 +172,7 @@ async function testAllNotifiers() {
       ? 'osascript' 
       : workingTypes[0];
     
-    Logger.info(`💡 Recommended: ${recommended}`);
+    Logger.info(`[RECOMMENDATION] ${recommended}`);
     Logger.info(`Setup command: cchook setup`);
   }
 }

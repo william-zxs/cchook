@@ -16,9 +16,9 @@ export function modeCommand(program) {
           // 显示当前模式
           const currentConfig = configManager.getConfig();
           const currentMode = currentConfig.mode;
-          const modeIcon = currentMode === 'normal' ? '🔔' : '🔕';
+          const modeStatus = currentMode === 'normal' ? '[ENABLED]' : '[DISABLED]';
           
-          Logger.info(i18n.t('mode.current', modeIcon, currentMode.toUpperCase()));
+          Logger.info(i18n.t('mode.current', modeStatus, currentMode.toUpperCase()));
           
           if (currentMode === 'normal') {
             Logger.info(i18n.t('mode.notification.enabled'));
@@ -30,9 +30,9 @@ export function modeCommand(program) {
           
           console.log('\n' + i18n.t('mode.available'));
           ConfigValidator.VALID_MODES.forEach(validMode => {
-            const icon = validMode === 'normal' ? '🔔' : '🔕';
+            const status = validMode === 'normal' ? '[ENABLED]' : '[DISABLED]';
             const current = validMode === currentMode ? i18n.t('mode.current.suffix') : '';
-            console.log(`  ${icon} ${validMode}${current}`);
+            console.log(`  ${status} ${validMode}${current}`);
           });
           
           return;
@@ -54,8 +54,8 @@ export function modeCommand(program) {
 
         await configManager.setMode(mode);
         
-        const modeIcon = mode === 'normal' ? '🔔' : '🔕';
-        Logger.success(i18n.t('mode.switched', modeIcon, mode.toUpperCase()));
+        const modeStatus = mode === 'normal' ? '[ENABLED]' : '[DISABLED]';
+        Logger.success(i18n.t('mode.switched', modeStatus, mode.toUpperCase()));
         
         if (mode === 'normal') {
           Logger.info(i18n.t('mode.notification.enabled'));

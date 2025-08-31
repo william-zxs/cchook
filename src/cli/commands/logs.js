@@ -136,8 +136,8 @@ function formatLogLine(line) {
       console.log(chalk.gray(`[${timestamp}]`), 
         chalk.blue(`[${logEntry.eventName}]`),
         logEntry.result.success 
-          ? chalk.green('✓') 
-          : (logEntry.result.skipped ? chalk.yellow('⊝') : chalk.red('✗'))
+          ? chalk.green('[SUCCESS]') 
+          : (logEntry.result.skipped ? chalk.yellow('[SKIPPED]') : chalk.red('[FAILED]'))
       );
       
       if (logEntry.result.error) {
