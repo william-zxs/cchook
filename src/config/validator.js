@@ -13,7 +13,7 @@ export class ConfigValidator {
     'SessionEnd'
   ];
 
-  static VALID_NOTIFICATION_TYPES = ['osascript', 'console', 'dingtalk', 'macos'];
+  static VALID_NOTIFICATION_TYPES = ['osascript', 'dingtalk', 'macos'];
 
   static validateConfig(config) {
     const errors = [];

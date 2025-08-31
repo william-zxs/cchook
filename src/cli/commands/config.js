@@ -9,7 +9,6 @@ import i18n from '../../utils/i18n.js';
 function getDisplayNotificationType(type) {
   const typeMapping = {
     'osascript': 'macos',
-    'console': 'console',
     'dingtalk': 'dingtalk',
     'macos': 'macos'
   };

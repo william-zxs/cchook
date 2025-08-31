@@ -1,11 +1,13 @@
 # cchook - Claude Code Hook 管理工具
 
-cchook 是一个专为 Claude Code 设计的 hook 管理工具，提供了现代化的 TUI 界面和完整的通知系统，让您能够及时了解 Claude Code 的工作状态。
+[English](README_EN.md) | 中文
+
+cchook 是一个专为 Claude Code 设计的 hook 管理工具，提供完整的通知系统和命令行界面，让您能够及时了解 Claude Code 的工作状态。
 
 ## ✨ 特性
 
-- 🔔 **智能通知系统** - 支持 macOS 系统通知和控制台通知
-- 🎨 **现代 TUI 界面** - 基于 Ink 的美观交互界面
+- 🔔 **智能通知系统** - 支持 macOS 系统通知、钉钉机器人通知和控制台通知
+- 🖥️ **命令行界面** - 简洁高效的 CLI 操作
 - ⚙️ **灵活配置管理** - 支持工作模式切换和事件过滤
 - 🔧 **自动 Hook 安装** - 一键配置 Claude Code hooks
 - 🚀 **即插即用** - 简单的安装和配置过程
@@ -14,18 +16,8 @@ cchook 是一个专为 Claude Code 设计的 hook 管理工具，提供了现代
 ## 📦 安装
 
 ```bash
-# 克隆项目
-git clone <repository-url>
-cd cchook
-
-# 安装依赖
-npm install
-
-# 使 cchook 全局可用
-npm link
-
-# 或者直接使用
-npm run dev
+# 通过 npm 安装（推荐）
+npm install -g cchook
 ```
 
 ## 🚀 快速开始
@@ -41,23 +33,36 @@ cchook setup
 - 自动配置 Claude Code hooks (`~/.claude/settings.json`)
 - 验证安装是否成功
 
-### 2. 启动 TUI 界面
+### 2. 查看状态和管理配置
 
 ```bash
-cchook
+# 查看系统状态
+cchook status
+
+# 查看详细状态
+cchook status --verbose
 ```
 
-使用键盘导航：
-- `S` - 查看系统状态
-- `C` - 配置管理
-- `T` - 测试通知
-- `H` - 查看帮助
-- `Q` 或 `ESC` - 退出
+### 3. 配置通知方式（可选）
 
-### 3. 测试通知功能
+配置钉钉机器人通知：
+```bash
+cchook config dingtalk
+```
+
+配置 macOS 系统通知：
+```bash
+cchook config macos
+```
+
+### 4. 测试通知功能
 
 ```bash
 cchook test
+
+# 测试特定通知类型
+cchook test dingtalk
+cchook test macos
 ```
 
 ## 📋 命令行使用
@@ -65,9 +70,6 @@ cchook test
 ### 基本命令
 
 ```bash
-# 启动 TUI 界面
-cchook
-
 # 初始化配置
 cchook setup [--force]
 
@@ -76,6 +78,9 @@ cchook status [--verbose]
 
 # 测试通知
 cchook test [type] [--all] [--current]
+
+# 配置通知
+cchook config <type>
 ```
 
 ### 模式管理
@@ -89,6 +94,19 @@ cchook mode normal
 
 # 切换到静音模式（禁用通知）
 cchook mode silent
+```
+
+### 通知配置管理
+
+```bash
+# 配置钉钉机器人
+cchook config dingtalk
+
+# 配置 macOS 通知
+cchook config macos
+
+# 显示当前配置
+cchook config show
 ```
 
 ### 事件管理
@@ -118,6 +136,30 @@ cchook events remove <event>
 | `SessionStart` | 会话开始 | 新会话启动时 |
 | `SessionEnd` | 会话结束 | 会话结束时 |
 
+## 🔔 钉钉机器人配置
+
+### 1. 创建钉钉机器人
+
+请参考钉钉官方文档创建自定义机器人：
+**https://open.dingtalk.com/document/robots/custom-robot-access**
+
+关键步骤：
+1. 在钉钉群聊中添加机器人
+2. 选择“自定义”机器人类型
+3. 设置机器人名称和头像
+4. 安全设置中选择“加签”方式
+5. 获取 `access_token` 和 `secret`
+
+### 2. 配置 cchook
+
+```bash
+# 交互式配置
+cchook config dingtalk
+
+# 或直接传参数
+cchook notify --type dingtalk --token YOUR_ACCESS_TOKEN --secret YOUR_SECRET "测试消息"
+```
+
 ## ⚙️ 配置文件
 
 ### cchook 配置 (`~/.cchook/config.json`)
@@ -132,11 +174,16 @@ cchook events remove <event>
     "UserPromptSubmit"
   ],
   "notifications": {
-    "type": "osascript",
-    "osascript": {
+    "type": "dingtalk",
+    "defaultTypes": ["dingtalk", "macos"],
+    "dingtalk": {
+      "accessToken": "YOUR_ACCESS_TOKEN",
+      "secret": "YOUR_SECRET"
+    },
+    "macos": {
       "title": "Claude Code",
       "subtitle": "通知",
-      "sound": "default"
+      "sound": true
     }
   },
   "projectConfigs": {}
@@ -151,9 +198,20 @@ cchook events remove <event>
 
 - `enabledEvents`: 启用的事件数组
 
-- `notifications.type`: 通知类型
-  - `"osascript"` - macOS 系统通知
-  - `"console"` - 控制台通知
+- `notifications.type`: 主通知类型
+  - `"dingtalk"` - 钉钉机器人通知
+  - `"macos"` - macOS 系统通知
+
+- `notifications.defaultTypes`: 默认启用的通知类型列表
+
+- `notifications.dingtalk`: 钉钉机器人配置
+  - `accessToken` - 机器人 webhook 的 access_token
+  - `secret` - 机器人安全设置的加签 secret
+
+- `notifications.macos`: macOS 系统通知配置
+  - `title` - 通知标题
+  - `subtitle` - 通知副标题
+  - `sound` - 是否播放声音
 
 ## 🧪 测试
 
@@ -170,6 +228,23 @@ npm run test:watch
 
 ## 🛠️ 开发
 
+### 从源代码安装（开发）
+
+```bash
+# 克隆项目
+git clone <repository-url>
+cd cchook
+
+# 安装依赖
+npm install
+
+# 使 cchook 全局可用
+npm link
+
+# 或者直接使用
+npm run dev
+```
+
 ### 项目结构
 
 ```
@@ -178,8 +253,7 @@ cchook/
 │   └── cchook.js           # CLI 入口
 ├── src/
 │   ├── cli/
-│   │   ├── commands/       # CLI 命令实现
-│   │   └── tui/           # Ink TUI 组件
+│   │   └── commands/       # CLI 命令实现
 │   ├── config/            # 配置管理
 │   ├── hook/              # Hook 处理和安装
 │   ├── notifications/     # 通知系统
@@ -191,13 +265,26 @@ cchook/
 ### 技术栈
 
 - **Node.js** - 运行时环境
-- **Ink + React** - TUI 界面框架
 - **Commander.js** - CLI 参数解析
 - **Jest** - 测试框架
 - **fs-extra** - 文件系统操作
 - **chalk** - 终端颜色输出
 
 ## 🔧 故障排除
+
+### 钉钉通知不工作
+
+1. **检查配置**: 确保 accessToken 和 secret 正确
+   ```bash
+   cchook config show
+   ```
+
+2. **检查网络**: 确保可以访问钉钉 API
+   ```bash
+   cchook test dingtalk
+   ```
+
+3. **检查机器人设置**: 确保机器人在群聊中且配置正确
 
 ### 通知不工作
 
@@ -214,6 +301,9 @@ cchook/
 3. **测试通知**: 运行通知测试
    ```bash
    cchook test
+   # 或测试特定类型
+   cchook test dingtalk
+   cchook test macos
    ```
 
 4. **检查权限**: 在 macOS 上，确保终端有发送通知的权限
@@ -256,6 +346,6 @@ MIT License
 ### v1.0.0
 - 初始版本发布
 - 基础通知功能
-- TUI 界面
+- 命令行界面
 - Claude Code hooks 集成
 - 完整测试覆盖

@@ -44,27 +44,50 @@ async function testCurrentConfig() {
     }
 
     const notificationConfig = config.notifications;
-    const notifier = NotificationFactory.create(notificationConfig.type, notificationConfig);
+    const defaultTypes = configManager.getDefaultNotificationTypes();
     
-    Logger.info(`Testing ${notificationConfig.type} notifications...`);
+    Logger.info(`Testing default notification types: ${defaultTypes.join(', ')}`);
     
-    const result = await notifier.notify({
-      title: 'cchook Test',
-      message: 'This is a test notification',
-      subtitle: `Notification type: ${notificationConfig.type}`
-    });
+    const results = [];
     
-    if (result.success) {
-      Logger.success(`${notificationConfig.type} notification test successful`);
-      Logger.info('If you saw the notification, the configuration is working properly');
-    } else {
-      Logger.error(`[FAILED] ${notificationConfig.type} notification test failed: ${result.error}`);
-      
-      // 提供故障排除建议
-      if (notificationConfig.type === 'osascript' && process.platform !== 'darwin') {
-        Logger.warning('[NOTE] osascript is only available on macOS');
-        Logger.info('Recommend switching to console notifications: cchook setup');
+    for (const type of defaultTypes) {
+      try {
+        const notifier = NotificationFactory.create(type, notificationConfig);
+        
+        Logger.info(`Testing ${type}...`);
+        
+        const result = await notifier.notify({
+          title: 'cchook Test',
+          message: 'This is a test notification',
+          subtitle: `Notification type: ${type}`
+        });
+        
+        results.push({ type, ...result });
+        
+        if (result.success) {
+          Logger.success(`${type} notification test successful`);
+        } else {
+          Logger.error(`[FAILED] ${type} notification test failed: ${result.error}`);
+        }
+        
+        // 测试间隔
+        if (defaultTypes.indexOf(type) < defaultTypes.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+      } catch (error) {
+        Logger.error(`${type} notification test error:`, error.message);
+        results.push({ type, success: false, error: error.message });
       }
+    }
+    
+    // 显示测试结果总结
+    const successful = results.filter(r => r.success).length;
+    if (successful > 0) {
+      Logger.success(`${successful}/${defaultTypes.length} notification types working`);
+      Logger.info('If you saw the notifications, the configuration is working properly');
+    } else {
+      Logger.error('All notification tests failed');
     }
 
   } catch (error) {

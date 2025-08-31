@@ -1,27 +1,26 @@
 import { OSAScriptNotifier } from './osascript.js';
-import { ConsoleNotifier } from './console.js';
+import { DingTalkNotifier } from './dingtalk.js';
 import { Logger } from '../utils/logger.js';
 
 export class NotificationFactory {
   static SUPPORTED_TYPES = {
     osascript: OSAScriptNotifier,
-    console: ConsoleNotifier
+    dingtalk: DingTalkNotifier,
+    macos: OSAScriptNotifier  // macos 作为 osascript 的别名
   };
 
   static create(type, config = {}) {
     const NotifierClass = this.SUPPORTED_TYPES[type];
     
     if (!NotifierClass) {
-      Logger.warning(`不支持的通知类型: ${type}，使用控制台通知`);
-      return new ConsoleNotifier(config);
+      throw new Error(`不支持的通知类型: ${type}。支持的类型: ${this.getSupportedTypes().join(', ')}`);
     }
 
     try {
       return new NotifierClass(config[type] || config);
     } catch (error) {
       Logger.error(`创建 ${type} 通知器失败:`, error);
-      Logger.info('回退到控制台通知');
-      return new ConsoleNotifier(config);
+      throw error;
     }
   }
 
@@ -65,8 +64,7 @@ export class NotificationFactory {
       }
     }
 
-    // 回退到控制台通知
-    Logger.debug('使用控制台通知作为默认方式');
-    return 'console';
+    // 没有可用的通知方式
+    throw new Error('没有可用的通知方式。请确保在 macOS 系统上运行或配置其他通知方式。');
   }
 }

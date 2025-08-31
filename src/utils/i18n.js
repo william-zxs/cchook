@@ -138,7 +138,6 @@ const messages = {
     'notification.test.title': 'cchook 测试',
     'notification.test.message': '这是一个测试通知',
     'notification.test.subtitle.osascript': '如果您看到这个消息，说明通知功能正常工作',
-    'notification.test.subtitle.console': '控制台通知功能正常工作',
     'notification.claude.title': 'Claude Code 通知',
     'notification.claude.subtitle': '需要注意',
     'notification.message.received': '收到通知',
@@ -162,9 +161,8 @@ const messages = {
     'notification.session.end.reason': '结束原因: {0}',
 
     // Logger messages
-    'logger.unsupported.notification': '不支持的通知类型: {0}，使用控制台通知',
+    'logger.unsupported.notification': '不支持的通知类型: {0}',
     'logger.notifier.creation.failed': '创建 {0} 通知器失败:',
-    'logger.fallback.console': '回退到控制台通知',
     'logger.test.success': '{0} 通知器测试成功',
     'logger.test.failed': '{0} 通知器测试失败:',
     'logger.test.error': '{0} 通知器测试异常:',
@@ -173,7 +171,6 @@ const messages = {
     'logger.detection.message': '正在检测最佳通知方式...',
     'logger.osascript.detected': '检测到 osascript 支持',
     'logger.osascript.unavailable': 'osascript 不可用:',
-    'logger.console.fallback': '使用控制台通知作为默认方式',
 
     // Common
     'common.error': '错误',
@@ -396,7 +393,6 @@ const messages = {
     'notification.test.title': 'cchook Test',
     'notification.test.message': 'This is a test notification',
     'notification.test.subtitle.osascript': 'If you see this message, notification system is working properly',
-    'notification.test.subtitle.console': 'Console notification system is working properly',
     'notification.claude.title': 'Claude Code Notification',
     'notification.claude.subtitle': 'Attention Required',
     'notification.message.received': 'Notification received',
@@ -420,9 +416,8 @@ const messages = {
     'notification.session.end.reason': 'Reason: {0}',
 
     // Logger messages
-    'logger.unsupported.notification': 'Unsupported notification type: {0}, using console notification',
+    'logger.unsupported.notification': 'Unsupported notification type: {0}',
     'logger.notifier.creation.failed': 'Failed to create {0} notifier:',
-    'logger.fallback.console': 'Falling back to console notification',
     'logger.test.success': '{0} notifier test successful',
     'logger.test.failed': '{0} notifier test failed:',
     'logger.test.error': '{0} notifier test error:',
@@ -431,7 +426,6 @@ const messages = {
     'logger.detection.message': 'Detecting best notification method...',
     'logger.osascript.detected': 'osascript support detected',
     'logger.osascript.unavailable': 'osascript unavailable:',
-    'logger.console.fallback': 'Using console notification as default',
 
     // Common
     'common.error': 'Error',

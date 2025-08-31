@@ -12,7 +12,6 @@ import chalk from 'chalk';
 function getDisplayNotificationType(type) {
   const typeMapping = {
     'osascript': 'macos',
-    'console': 'console', 
     'dingtalk': 'dingtalk',
     'macos': 'macos'
   };
@@ -61,9 +60,9 @@ export function statusCommand(program) {
         console.log(i18n.t('status.mode', chalk[modeColor](config.mode.toUpperCase())));
 
         // 通知配置
-        const notificationType = config.notifications?.type || 'unknown';
-        const displayNotificationType = getDisplayNotificationType(notificationType);
-        console.log(i18n.t('status.notification.type', chalk.green(displayNotificationType)));
+        const defaultTypes = configManager.getDefaultNotificationTypes();
+        const displayTypes = defaultTypes.map(type => getDisplayNotificationType(type)).join(', ');
+        console.log(i18n.t('status.notification.type', chalk.green(displayTypes)));
 
         // 启用的事件
         const enabledCount = config.enabledEvents.length;
@@ -122,26 +121,25 @@ export function statusCommand(program) {
 
           // 通知配置详情
           console.log(chalk.white(i18n.t('status.notification.config')));
-          console.log(i18n.t('status.notification.type.label', chalk.blue(displayNotificationType)));
+          console.log(i18n.t('status.notification.type.label', chalk.blue(displayTypes)));
           
-          // 根据通知类型显示相应的配置详情
-          if (notificationType === 'osascript' && config.notifications?.osascript) {
-            const osConfig = config.notifications.osascript;
-            console.log(i18n.t('status.notification.title', chalk.blue(osConfig.title || i18n.t('status.default'))));
-            console.log(i18n.t('status.notification.subtitle', chalk.blue(osConfig.subtitle || i18n.t('status.default'))));
-            console.log(i18n.t('status.notification.sound', chalk.blue(osConfig.sound || 'default')));
-          } else if (notificationType === 'macos' && config.notifications?.macos) {
-            const macosConfig = config.notifications.macos;
-            console.log(i18n.t('status.notification.title', chalk.blue(macosConfig.title || i18n.t('status.default'))));
-            console.log(i18n.t('status.notification.subtitle', chalk.blue(macosConfig.subtitle || i18n.t('status.default'))));
-            console.log(i18n.t('status.notification.sound', chalk.blue(macosConfig.sound ? (i18n.isChinese() ? '启用' : 'Enabled') : (i18n.isChinese() ? '禁用' : 'Disabled'))));
-          } else if (notificationType === 'dingtalk' && config.notifications?.dingtalk) {
-            const dingtalkConfig = config.notifications.dingtalk;
-            const tokenStatus = dingtalkConfig.accessToken ? (i18n.isChinese() ? '已配置' : 'Configured') : (i18n.isChinese() ? '未配置' : 'Not configured');
-            const secretStatus = dingtalkConfig.secret ? (i18n.isChinese() ? '已配置' : 'Configured') : (i18n.isChinese() ? '未配置' : 'Not configured');
-            console.log(chalk.blue('  Access Token: ') + (dingtalkConfig.accessToken ? chalk.green(tokenStatus) : chalk.red(tokenStatus)));
-            console.log(chalk.blue('  Secret: ') + (dingtalkConfig.secret ? chalk.green(secretStatus) : chalk.red(secretStatus)));
-          }
+          // 根据默认通知类型显示相应的配置详情
+          defaultTypes.forEach(type => {
+            if (type === 'macos' && config.notifications?.macos) {
+              const macosConfig = config.notifications.macos;
+              console.log(chalk.white(`\n  ${i18n.isChinese() ? 'macOS 配置' : 'macOS Configuration'}:`));
+              console.log(i18n.t('status.notification.title', chalk.blue(macosConfig.title || i18n.t('status.default'))));
+              console.log(i18n.t('status.notification.subtitle', chalk.blue(macosConfig.subtitle || i18n.t('status.default'))));
+              console.log(i18n.t('status.notification.sound', chalk.blue(macosConfig.sound ? (i18n.isChinese() ? '启用' : 'Enabled') : (i18n.isChinese() ? '禁用' : 'Disabled'))));
+            } else if (type === 'dingtalk' && config.notifications?.dingtalk) {
+              const dingtalkConfig = config.notifications.dingtalk;
+              const tokenStatus = dingtalkConfig.accessToken ? (i18n.isChinese() ? '已配置' : 'Configured') : (i18n.isChinese() ? '未配置' : 'Not configured');
+              const secretStatus = dingtalkConfig.secret ? (i18n.isChinese() ? '已配置' : 'Configured') : (i18n.isChinese() ? '未配置' : 'Not configured');
+              console.log(chalk.white(`\n  ${i18n.isChinese() ? '钉钉配置' : 'DingTalk Configuration'}:`));
+              console.log(chalk.blue('    Access Token: ') + (dingtalkConfig.accessToken ? chalk.green(tokenStatus) : chalk.red(tokenStatus)));
+              console.log(chalk.blue('    Secret: ') + (dingtalkConfig.secret ? chalk.green(secretStatus) : chalk.red(secretStatus)));
+            }
+          });
 
           console.log('');
 

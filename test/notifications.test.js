@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { OSAScriptNotifier } from '../src/notifications/osascript.js';
-import { ConsoleNotifier } from '../src/notifications/console.js';
 import { NotificationFactory } from '../src/notifications/factory.js';
 
 // Mock child_process for osascript tests
@@ -72,56 +71,6 @@ describe('OSAScriptNotifier', () => {
   });
 });
 
-describe('ConsoleNotifier', () => {
-  let notifier;
-  let consoleSpy;
-
-  beforeEach(() => {
-    notifier = new ConsoleNotifier();
-    consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-  });
-
-  afterEach(() => {
-    consoleSpy.mockRestore();
-  });
-
-  describe('notify', () => {
-    it('should log notification to console', async () => {
-      await notifier.notify({
-        title: 'Test Title',
-        message: 'Test Message',
-        level: 'info'
-      });
-
-      expect(consoleSpy).toHaveBeenCalled();
-      const call = consoleSpy.mock.calls[0][0];
-      expect(call).toContain('Test Title');
-      expect(call).toContain('Test Message');
-    });
-
-    it('should handle different levels', async () => {
-      await notifier.notify({
-        message: 'Success message',
-        level: 'success'
-      });
-
-      expect(consoleSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('displayNotification', () => {
-    it('should format notification correctly', () => {
-      notifier.displayNotification({
-        title: 'Test',
-        message: 'Message',
-        subtitle: 'Subtitle',
-        level: 'info'
-      });
-
-      expect(consoleSpy).toHaveBeenCalled();
-    });
-  });
-});
 
 describe('NotificationFactory', () => {
   describe('create', () => {
@@ -130,14 +79,10 @@ describe('NotificationFactory', () => {
       expect(notifier).toBeInstanceOf(OSAScriptNotifier);
     });
 
-    it('should create ConsoleNotifier for console type', () => {
-      const notifier = NotificationFactory.create('console');
-      expect(notifier).toBeInstanceOf(ConsoleNotifier);
-    });
-
-    it('should fallback to ConsoleNotifier for invalid type', () => {
-      const notifier = NotificationFactory.create('invalid');
-      expect(notifier).toBeInstanceOf(ConsoleNotifier);
+    it('should throw error for invalid type', () => {
+      expect(() => {
+        NotificationFactory.create('invalid');
+      }).toThrow('不支持的通知类型: invalid');
     });
 
     it('should pass config to notifier', () => {
