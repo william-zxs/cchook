@@ -1,6 +1,22 @@
 import { ConfigManager } from '../../config/manager.js';
 import i18n from '../../utils/i18n.js';
 
+/**
+ * 将底层技术实现类型映射为用户友好的显示名称
+ * @param {string} type 底层通知类型
+ * @returns {string} 用户友好的显示名称
+ */
+function getDisplayNotificationType(type) {
+  const typeMapping = {
+    'osascript': 'macos',
+    'console': 'console',
+    'dingtalk': 'dingtalk',
+    'macos': 'macos'
+  };
+  
+  return typeMapping[type] || type;
+}
+
 export function configCommand(program) {
   const configCmd = program
     .command('config')
@@ -85,7 +101,10 @@ export function configCommand(program) {
         console.log('\n' + i18n.t('config.show.other.title'));
         console.log(i18n.t('config.show.mode', config.mode));
         console.log(i18n.t('config.show.enabled.events', config.enabledEvents.join(', ')));
-        console.log(i18n.t('config.show.notification.type', config.notifications.type));
+        
+        // 将底层技术实现类型映射为用户友好的显示名称
+        const displayType = getDisplayNotificationType(config.notifications.type);
+        console.log(i18n.t('config.show.notification.type', displayType));
         
         console.log(i18n.t('config.show.separator') + '\n');
       } catch (error) {
