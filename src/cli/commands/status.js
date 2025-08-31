@@ -4,6 +4,43 @@ import { Logger } from '../../utils/logger.js';
 import i18n from '../../utils/i18n.js';
 import chalk from 'chalk';
 
+/**
+ * 将底层技术实现类型映射为用户友好的显示名称
+ * @param {string} type 底层通知类型
+ * @returns {string} 用户友好的显示名称
+ */
+function getDisplayNotificationType(type) {
+  const typeMapping = {
+    'osascript': 'macos',
+    'console': 'console', 
+    'dingtalk': 'dingtalk',
+    'macos': 'macos'
+  };
+  
+  return typeMapping[type] || type;
+}
+
+/**
+ * 获取事件的描述信息
+ * @param {string} event 事件名称
+ * @returns {string} 事件描述
+ */
+function getEventDescription(event) {
+  const eventDescriptions = {
+    'Notification': i18n.isChinese() ? '通知消息' : 'Notification messages',
+    'Stop': i18n.isChinese() ? '停止事件' : 'Stop events',
+    'SubagentStop': i18n.isChinese() ? '子代理停止' : 'Subagent stop',
+    'UserPromptSubmit': i18n.isChinese() ? '用户提示提交' : 'User prompt submit',
+    'PreToolUse': i18n.isChinese() ? '工具使用前' : 'Pre tool use',
+    'PostToolUse': i18n.isChinese() ? '工具使用后' : 'Post tool use',
+    'PreCompact': i18n.isChinese() ? '压缩前' : 'Pre compact',
+    'SessionStart': i18n.isChinese() ? '会话开始' : 'Session start',
+    'SessionEnd': i18n.isChinese() ? '会话结束' : 'Session end'
+  };
+  
+  return eventDescriptions[event] || event;
+}
+
 export function statusCommand(program) {
   program
     .command('status')
@@ -26,13 +63,14 @@ export function statusCommand(program) {
 
         // 通知配置
         const notificationType = config.notifications?.type || 'unknown';
-        console.log(i18n.t('status.notification.type', chalk.blue(notificationType)));
+        const displayNotificationType = getDisplayNotificationType(notificationType);
+        console.log(i18n.t('status.notification.type', chalk.blue(displayNotificationType)));
 
         // 启用事件数量
         const enabledCount = config.enabledEvents.length;
         const totalEvents = 9; // 总事件数
         const eventsColor = enabledCount > 0 ? 'green' : 'red';
-        console.log(i18n.t('status.enabled.events', chalk[eventsColor](`${enabledCount}/${totalEvents}`)));
+        console.log(i18n.t('status.enabled.events', chalk[eventsColor](enabledCount), chalk[eventsColor](totalEvents)));
 
         console.log('');
 
@@ -66,25 +104,38 @@ export function statusCommand(program) {
           
           // 启用的事件列表
           if (config.enabledEvents.length > 0) {
-            console.log(chalk.white('启用的事件:'));
+            console.log(chalk.white(i18n.t('status.enabled.events.list')));
             config.enabledEvents.forEach(event => {
-              console.log(chalk.green('  ✓ ') + event);
+              const description = getEventDescription(event);
+              console.log(chalk.green('  ✓ ') + chalk.white(event) + chalk.gray(` (${description})`));
             });
           } else {
-            console.log(chalk.red('  没有启用任何事件'));
+            console.log(chalk.red(i18n.t('status.no.events')));
           }
 
           console.log('');
 
           // 通知配置详情
-          console.log(chalk.white('通知配置:'));
-          console.log(chalk.blue('  类型: ') + notificationType);
+          console.log(chalk.white(i18n.t('status.notification.config')));
+          console.log(i18n.t('status.notification.type.label', chalk.blue(displayNotificationType)));
           
-          if (config.notifications?.osascript) {
+          // 根据通知类型显示相应的配置详情
+          if (notificationType === 'osascript' && config.notifications?.osascript) {
             const osConfig = config.notifications.osascript;
-            console.log(chalk.blue('  标题: ') + (osConfig.title || '默认'));
-            console.log(chalk.blue('  副标题: ') + (osConfig.subtitle || '默认'));
-            console.log(chalk.blue('  声音: ') + (osConfig.sound || 'default'));
+            console.log(i18n.t('status.notification.title', chalk.blue(osConfig.title || i18n.t('status.default'))));
+            console.log(i18n.t('status.notification.subtitle', chalk.blue(osConfig.subtitle || i18n.t('status.default'))));
+            console.log(i18n.t('status.notification.sound', chalk.blue(osConfig.sound || 'default')));
+          } else if (notificationType === 'macos' && config.notifications?.macos) {
+            const macosConfig = config.notifications.macos;
+            console.log(i18n.t('status.notification.title', chalk.blue(macosConfig.title || i18n.t('status.default'))));
+            console.log(i18n.t('status.notification.subtitle', chalk.blue(macosConfig.subtitle || i18n.t('status.default'))));
+            console.log(i18n.t('status.notification.sound', chalk.blue(macosConfig.sound ? (i18n.isChinese() ? '启用' : 'Enabled') : (i18n.isChinese() ? '禁用' : 'Disabled'))));
+          } else if (notificationType === 'dingtalk' && config.notifications?.dingtalk) {
+            const dingtalkConfig = config.notifications.dingtalk;
+            const tokenStatus = dingtalkConfig.accessToken ? (i18n.isChinese() ? '已配置' : 'Configured') : (i18n.isChinese() ? '未配置' : 'Not configured');
+            const secretStatus = dingtalkConfig.secret ? (i18n.isChinese() ? '已配置' : 'Configured') : (i18n.isChinese() ? '未配置' : 'Not configured');
+            console.log(chalk.blue('  Access Token: ') + (dingtalkConfig.accessToken ? chalk.green(tokenStatus) : chalk.red(tokenStatus)));
+            console.log(chalk.blue('  Secret: ') + (dingtalkConfig.secret ? chalk.green(secretStatus) : chalk.red(secretStatus)));
           }
 
           console.log('');
