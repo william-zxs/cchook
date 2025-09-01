@@ -180,6 +180,9 @@ export function statusCommand(program) {
         } else {
           console.log(i18n.t('status.suggestion.test'));
         }
+        
+        // 添加通知方式切换提示
+        console.log(i18n.t('status.suggestion.switch'));
 
       } catch (error) {
         Logger.error(i18n.t('status.error.load.failed'), error.message);

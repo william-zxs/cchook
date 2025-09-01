@@ -57,6 +57,7 @@ const messages = {
     'status.suggestion.enable': '[TIP] 建议操作: 运行 `cchook events add Notification` 启用基本通知',
     'status.suggestion.mode.normal': '[TIP] 建议操作: 运行 `cchook mode normal` 启用通知',
     'status.suggestion.test': '[TIP] 建议操作: 运行 `cchook test` 测试通知功能',
+    'status.suggestion.switch': '[TIP] 建议操作: 运行 `cchook switch` 切换通知方式',
     'status.error.load.failed': '获取状态信息失败:',
 
     // Setup command
@@ -312,6 +313,7 @@ const messages = {
     'status.suggestion.enable': '[TIP] Suggestion: Run `cchook events add Notification` to enable basic notifications',
     'status.suggestion.mode.normal': '[TIP] Suggestion: Run `cchook mode normal` to enable notifications',
     'status.suggestion.test': '[TIP] Suggestion: Run `cchook test` to test notification functionality',
+    'status.suggestion.switch': '[TIP] Suggestion: Run `cchook switch` to switch notification types',
     'status.error.load.failed': 'Failed to get status information:',
 
     // Setup command  
