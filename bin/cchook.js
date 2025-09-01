@@ -19,6 +19,7 @@ import { logsCommand } from '../src/cli/commands/logs.js';
 import { handleHookInput } from '../src/hook/handler.js';
 import { notifyCommand } from '../src/cli/commands/notify.js';
 import { configCommand } from '../src/cli/commands/config.js';
+import { switchCommand } from '../src/cli/commands/switch.js';
 
 const { version } = require('../package.json');
 
@@ -42,6 +43,7 @@ testCommand(program);
 logsCommand(program);
 notifyCommand(program);
 configCommand(program);
+switchCommand(program);
 
 // 解析命令行参数
 program.parse();
