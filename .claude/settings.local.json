@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./bin/cchook.js status:*)"
+      "Bash(./bin/cchook.js status:*)",
+      "Bash(npm version:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

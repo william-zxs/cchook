@@ -9,17 +9,9 @@ const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 导入命令模块
-import { setupCommand } from '../src/cli/commands/setup.js';
-import { modeCommand } from '../src/cli/commands/mode.js';
-import { eventsCommand } from '../src/cli/commands/events.js';
-import { statusCommand } from '../src/cli/commands/status.js';
-import { testCommand } from '../src/cli/commands/test.js';
-import { logsCommand } from '../src/cli/commands/logs.js';
+// 导入命令注册器
+import { commandRegistry } from '../src/cli/command-registry.js';
 import { handleHookInput } from '../src/hook/handler.js';
-import { notifyCommand } from '../src/cli/commands/notify.js';
-import { configCommand } from '../src/cli/commands/config.js';
-import { switchCommand } from '../src/cli/commands/switch.js';
 
 const { version } = require('../package.json');
 
@@ -34,16 +26,8 @@ if (process.argv.length === 2 && !process.stdin.isTTY) {
   process.exit(0);
 }
 
-// 注册命令
-setupCommand(program);
-modeCommand(program);
-eventsCommand(program);
-statusCommand(program);
-testCommand(program);
-logsCommand(program);
-notifyCommand(program);
-configCommand(program);
-switchCommand(program);
+// 注册所有命令
+commandRegistry.registerAllCommands(program);
 
 // 解析命令行参数
 program.parse();

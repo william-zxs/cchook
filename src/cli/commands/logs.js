@@ -3,25 +3,26 @@ import fsSync from 'fs';
 import path from 'path';
 import os from 'os';
 import { Logger } from '../../utils/logger.js';
+import i18n from '../../utils/i18n.js';
 import chalk from 'chalk';
 
 export function logsCommand(program) {
   program
     .command('logs')
-    .description('View hook call logs')
-    .option('-f, --follow', 'Follow logs in real time')
-    .option('-n, --lines <number>', 'Show last N lines', '50')
-    .option('-c, --clear', 'Clear log file')
+    .description(i18n.t('logs.description'))
+    .option('-f, --follow', i18n.t('logs.follow'))
+    .option('-n, --lines <number>', i18n.t('logs.number'), '50')
+    .option('-c, --clear', i18n.t('logs.clear'))
     .action(async (options) => {
       const logFile = path.join(os.homedir(), '.cchook', 'hooks.log');
       
       if (options.clear) {
         try {
           await fs.writeFile(logFile, '');
-          Logger.success('Log cleared');
+          Logger.success(i18n.t('logs.clear.success'));
           return;
         } catch (error) {
-          Logger.error('Failed to clear log:', error.message);
+          Logger.error(i18n.t('logs.clear.failed', error.message));
           return;
         }
       }
@@ -31,13 +32,13 @@ export function logsCommand(program) {
         try {
           await fs.access(logFile);
         } catch (error) {
-          Logger.warning('Log file does not exist. Hooks may not have been called yet.');
-          Logger.info(`Log file location: ${logFile}`);
+          Logger.warning(i18n.t('logs.no.file'));
+          Logger.info(i18n.t('logs.file.location', logFile));
           return;
         }
         
         if (options.follow) {
-          Logger.info('Following logs in real time... (Press Ctrl+C to exit)');
+          Logger.info(i18n.t('logs.follow.info'));
           Logger.info(`Log file: ${logFile}`);
           console.log('');
           
@@ -97,7 +98,7 @@ export function logsCommand(program) {
         }
         
       } catch (error) {
-        Logger.error('Failed to read log:', error.message);
+        Logger.error(i18n.t('logs.read.failed', error.message));
       }
     });
 }
@@ -108,13 +109,13 @@ async function showLogContent(logFile, lines) {
     const allLines = content.split('\n').filter(line => line.trim());
     
     if (allLines.length === 0) {
-      Logger.info('Log file is empty');
+      Logger.info(i18n.t('logs.empty'));
       return;
     }
     
     const displayLines = allLines.slice(-lines);
     
-    Logger.info(`Showing last ${displayLines.length} log entries:`);
+    Logger.info(i18n.t('logs.showing.last', displayLines.length));
     console.log('');
     
     displayLines.forEach(line => formatLogLine(line));

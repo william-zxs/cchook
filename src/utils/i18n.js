@@ -123,17 +123,37 @@ const messages = {
     // Test command
     'test.description': '测试通知功能',
     'test.all': '测试所有通知类型',
+    'test.current': '测试当前配置的通知类型',
     'test.type': '指定要测试的通知类型',
+    'test.testing.config': '[TEST] 正在测试当前通知配置...',
+    'test.silent.mode': '当前处于静音模式，通知已禁用',
+    'test.enable.mode': '运行 `cchook mode normal` 启用通知',
+    'test.no.events': '没有启用任何事件',
+    'test.enable.events': '运行 `cchook events add Notification` 启用基本通知',
+    'test.testing.types': '测试默认通知类型: {0}',
+    'test.testing.type': '测试 {0}...',
+    'test.success': '{0} 通知测试成功',
+    'test.failed': '[失败] {0} 通知测试失败: {1}',
+    'test.error': '{0} 通知测试错误: {1}',
+    'test.results': '{0}/{1} 种通知类型正常工作',
+    'test.working.properly': '如果您看到了通知，说明配置正常工作',
+    'test.all.failed': '所有通知测试都失败了',
+    'test.config.failed': '测试当前配置失败: {0}',
 
     // Logs command
     'logs.description': '查看 hook 调用日志',
     'logs.number': '显示最后 N 行日志',
     'logs.follow': '实时跟踪日志',
+    'logs.clear': '清除日志文件',
     'logs.file.location': '日志文件: {0}',
     'logs.no.file': '日志文件不存在。Hook 可能尚未被调用。',
     'logs.show.last': '显示最后 {0} 行日志:',
     'logs.follow.info': '实时跟踪日志... (按 Ctrl+C 退出)',
     'logs.read.failed': '读取日志失败: {0}',
+    'logs.clear.success': '日志已清除',
+    'logs.clear.failed': '清除日志失败: {0}',
+    'logs.empty': '日志文件为空',
+    'logs.showing.last': '显示最后 {0} 条日志:',
 
     // Notifications
     'notification.test.title': 'cchook 测试',
@@ -511,7 +531,28 @@ const messages = {
     'config.list.types.usage.multiple': '  # Set multiple default types',
     'config.list.types.usage.multiple.example': '  cchook config types --set "dingtalk,macos"',
     'config.list.types.usage.temporary': '  # Temporarily specify types',
-    'config.list.types.usage.temporary.example': '  cchook notify --types "dingtalk,macos" --msg "message content"'
+    'config.list.types.usage.temporary.example': '  cchook notify --types "dingtalk,macos" --msg "message content"',
+
+    // Command registry
+    'registry.help.info': 'Available commands: {0}',
+
+    // Error messages
+    'error.config.load.failed': '[ERROR] {0}: 配置加载失败',
+    'error.config.validation.failed': '[ERROR] {0}: 配置验证失败: {1}',
+    'error.notification.failed': '[ERROR] {0}: 通知发送失败: {1}',
+    'error.network': '[ERROR] {0}: 网络连接失败',
+    'error.permission': '[ERROR] {0}: 权限不足',
+    'error.file.system': '[ERROR] {0}: 文件系统错误: {1}',
+    'error.generic': '[ERROR] {0}: {1}',
+
+    // Error recovery suggestions
+    'error.suggestion.config.load': '[TIP] 运行 `cchook setup` 初始化配置',
+    'error.suggestion.config.validation': '[TIP] 检查配置文件是否有错误',
+    'error.suggestion.notification': '[TIP] 运行 `cchook test` 验证通知设置',
+    'error.suggestion.network': '[TIP] 检查网络连接',
+    'error.suggestion.permission': '[TIP] 检查文件权限后重试',
+    'error.suggestion.file.system': '[TIP] 检查文件或目录是否存在',
+    'error.suggestion.generic': '[TIP] 尝试重新运行命令'
   }
 };
 

@@ -1,13 +1,14 @@
 import { NotificationFactory } from '../../notifications/factory.js';
 import { ConfigManager } from '../../config/manager.js';
 import { Logger } from '../../utils/logger.js';
+import i18n from '../../utils/i18n.js';
 
 export function testCommand(program) {
   program
     .command('test [type]')
-    .description('Test notification functionality')
-    .option('-a, --all', 'Test all notification types')
-    .option('-c, --current', 'Test currently configured notification type')
+    .description(i18n.t('test.description'))
+    .option('-a, --all', i18n.t('test.all'))
+    .option('-c, --current', i18n.t('test.current'))
     .action(async (type, options) => {
       try {
         if (options.all) {

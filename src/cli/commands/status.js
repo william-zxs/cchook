@@ -1,6 +1,7 @@
 import { ConfigManager } from '../../config/manager.js';
 import { FileSystemUtils } from '../../utils/fs.js';
 import { Logger } from '../../utils/logger.js';
+import { ErrorHandler } from '../../utils/error-handler.js';
 import i18n from '../../utils/i18n.js';
 import chalk from 'chalk';
 
@@ -45,11 +46,10 @@ export function statusCommand(program) {
     .command('status')
     .description(i18n.t('status.description'))
     .option('-v, --verbose', i18n.t('status.verbose'))
-    .action(async (options) => {
-      try {
-        const configManager = new ConfigManager();
-        await configManager.loadConfig();
-        const config = configManager.getConfig();
+    .action(ErrorHandler.wrapAsyncCommand(async (options) => {
+      const configManager = new ConfigManager();
+      await configManager.loadConfig();
+      const config = configManager.getConfig();
 
         // 系统信息
         console.log(chalk.blue.bold(i18n.t('status.system.title')));
@@ -183,10 +183,5 @@ export function statusCommand(program) {
         
         // 添加通知方式切换提示
         console.log(i18n.t('status.suggestion.switch'));
-
-      } catch (error) {
-        Logger.error(i18n.t('status.error.load.failed'), error.message);
-        process.exit(1);
-      }
-    });
+    }, 'status'));
 }

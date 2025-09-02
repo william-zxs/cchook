@@ -6,9 +6,20 @@ export class ConfigManager {
   constructor() {
     this.config = null;
     this.configPath = FileSystemUtils.getCchookConfigPath();
+    this.cache = new Map();
+    this.cacheTimeout = 5 * 60 * 1000; // 5分钟缓存
+    this.lastLoadTime = 0;
   }
 
-  async loadConfig() {
+  async loadConfig(forceReload = false) {
+    const now = Date.now();
+    
+    // 检查缓存是否有效
+    if (!forceReload && this.config && (now - this.lastLoadTime) < this.cacheTimeout) {
+      Logger.debug('使用缓存配置');
+      return this.config;
+    }
+    
     try {
       const configData = await FileSystemUtils.readJsonFile(this.configPath);
       
@@ -16,6 +27,7 @@ export class ConfigManager {
         Logger.info('配置文件不存在，使用默认配置');
         this.config = ConfigValidator.getDefaultConfig();
         await this.saveConfig();
+        this.lastLoadTime = now;
         return this.config;
       }
 
@@ -29,15 +41,18 @@ export class ConfigManager {
         
         this.config = ConfigValidator.getDefaultConfig();
         await this.saveConfig();
+        this.lastLoadTime = now;
         return this.config;
       }
 
       this.config = ConfigValidator.sanitizeConfig(configData);
+      this.lastLoadTime = now;
       Logger.debug('配置加载成功');
       return this.config;
     } catch (error) {
       Logger.error('加载配置失败:', error);
       this.config = ConfigValidator.getDefaultConfig();
+      this.lastLoadTime = now;
       return this.config;
     }
   }
@@ -250,5 +265,50 @@ export class ConfigManager {
     }
     
     return this.config.notifications.defaultTypes;
+  }
+
+  /**
+   * 清除配置缓存
+   */
+  clearCache() {
+    this.config = null;
+    this.lastLoadTime = 0;
+    this.cache.clear();
+    Logger.debug('配置缓存已清除');
+  }
+
+  /**
+   * 检查配置缓存是否有效
+   * @returns {boolean} 缓存是否有效
+   */
+  isCacheValid() {
+    const now = Date.now();
+    return this.config && (now - this.lastLoadTime) < this.cacheTimeout;
+  }
+
+  /**
+   * 获取缓存状态信息
+   * @returns {object} 缓存状态
+   */
+  getCacheStatus() {
+    const now = Date.now();
+    const age = now - this.lastLoadTime;
+    const remaining = Math.max(0, this.cacheTimeout - age);
+    
+    return {
+      cached: !!this.config,
+      age: age,
+      remaining: remaining,
+      expired: age >= this.cacheTimeout
+    };
+  }
+
+  /**
+   * 设置缓存超时时间
+   * @param {number} timeout 超时时间（毫秒）
+   */
+  setCacheTimeout(timeout) {
+    this.cacheTimeout = timeout;
+    Logger.debug(`配置缓存超时设置为: ${timeout}ms`);
   }
 }

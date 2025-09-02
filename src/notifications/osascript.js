@@ -12,7 +12,13 @@ export class OSAScriptNotifier extends BaseNotifier {
     // 默认配置
     this.defaultTitle = config.title || 'Claude Code';
     this.defaultSubtitle = config.subtitle || '通知';
-    this.defaultSound = config.sound || 'default';
+    
+    // 处理声音配置：boolean -> string
+    let soundConfig = config.sound;
+    if (typeof soundConfig === 'boolean') {
+      soundConfig = soundConfig ? 'default' : 'none';
+    }
+    this.defaultSound = soundConfig || 'default';
   }
 
   async notify(options = {}) {
