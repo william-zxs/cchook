@@ -9,6 +9,9 @@
       "Bash(npm view:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "/Users/william/.cchook/"
+    ]
   }
 }
