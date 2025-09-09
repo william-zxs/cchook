@@ -111,13 +111,13 @@ cchook config show
 
 ```bash
 # List all events
-cchook events list
+cchook config events list
 
 # Enable event
-cchook events add <event>
+cchook config events add <event>
 
 # Disable event
-cchook events remove <event>
+cchook config events remove <event>
 ```
 
 ## 🔔 Supported Event Types
@@ -293,7 +293,7 @@ cchook/
 
 2. **Check events**: Make sure relevant events are enabled
    ```bash
-   cchook events list
+   cchook config events list
    ```
 
 3. **Test notifications**: Run notification tests

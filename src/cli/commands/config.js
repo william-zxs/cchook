@@ -216,7 +216,7 @@ async function testCurrentConfig() {
 
     if (config.enabledEvents.length === 0) {
       Logger.warning('No events are enabled');
-      Logger.info('Run `cchook events add Notification` to enable basic notifications');
+      Logger.info('Run `cchook config events add Notification` to enable basic notifications');
       return;
     }
 

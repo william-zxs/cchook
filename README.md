@@ -113,13 +113,13 @@ cchook config show
 
 ```bash
 # 列出所有事件
-cchook events list
+cchook config events list
 
 # 启用事件
-cchook events add <event>
+cchook config events add <event>
 
 # 禁用事件
-cchook events remove <event>
+cchook config events remove <event>
 ```
 
 ## 🔔 支持的事件类型
@@ -295,7 +295,7 @@ cchook/
 
 2. **检查事件**: 确保相关事件已启用
    ```bash
-   cchook events list
+   cchook config events list
    ```
 
 3. **测试通知**: 运行通知测试
