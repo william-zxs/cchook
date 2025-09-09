@@ -58,11 +58,10 @@ cchook config macos
 ### 4. 测试通知功能
 
 ```bash
-cchook test
+cchook config test
 
-# 测试特定通知类型
-cchook test dingtalk
-cchook test macos
+# 测试所有通知类型
+cchook config test --all
 ```
 
 ## 📋 命令行使用
@@ -77,7 +76,7 @@ cchook setup [--force]
 cchook status [--verbose]
 
 # 测试通知
-cchook test [type] [--all] [--current]
+cchook config test [--all]
 
 # 配置通知
 cchook config <type>
@@ -156,8 +155,8 @@ cchook config events remove <event>
 # 交互式配置
 cchook config dingtalk
 
-# 或直接传参数
-cchook notify --type dingtalk --token YOUR_ACCESS_TOKEN --secret YOUR_SECRET "测试消息"
+# 或直接测试
+cchook config test
 ```
 
 ## ⚙️ 配置文件
@@ -281,7 +280,7 @@ cchook/
 
 2. **检查网络**: 确保可以访问钉钉 API
    ```bash
-   cchook test dingtalk
+   cchook config test --all
    ```
 
 3. **检查机器人设置**: 确保机器人在群聊中且配置正确
@@ -300,10 +299,9 @@ cchook/
 
 3. **测试通知**: 运行通知测试
    ```bash
-   cchook test
-   # 或测试特定类型
-   cchook test dingtalk
-   cchook test macos
+   cchook config test
+   # 或测试所有类型
+   cchook config test --all
    ```
 
 4. **检查权限**: 在 macOS 上，确保终端有发送通知的权限
@@ -342,6 +340,12 @@ MIT License
 欢迎提交 Issue 和 Pull Request！
 
 ## 📝 更新日志
+
+### v1.1.1
+- **重构**: 将 events 命令迁移为 config 的子命令
+- **变更**: `cchook events` 命令已移除，使用 `cchook config events` 替代
+- **修复**: 更新所有相关文档和提示信息
+- **改进**: 优化命令结构，提升用户体验
 
 ### v1.0.0
 - 初始版本发布

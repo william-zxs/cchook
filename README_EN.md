@@ -56,11 +56,10 @@ cchook config macos
 ### 4. Test Notification Function
 
 ```bash
-cchook test
+cchook config test
 
-# Test specific notification type
-cchook test dingtalk
-cchook test macos
+# Test all notification types
+cchook config test --all
 ```
 
 ## 📋 Command Line Usage
@@ -75,7 +74,7 @@ cchook setup [--force]
 cchook status [--verbose]
 
 # Test notifications
-cchook test [type] [--all] [--current]
+cchook config test [--all]
 
 # Configure notifications
 cchook config <type>
@@ -154,8 +153,8 @@ Key steps:
 # Interactive configuration
 cchook config dingtalk
 
-# Or pass parameters directly
-cchook notify --type dingtalk --token YOUR_ACCESS_TOKEN --secret YOUR_SECRET "Test message"
+# Or test directly
+cchook config test
 ```
 
 ## ⚙️ Configuration Files
@@ -279,7 +278,7 @@ cchook/
 
 2. **Check network**: Ensure DingTalk API is accessible
    ```bash
-   cchook test dingtalk
+   cchook config test --all
    ```
 
 3. **Check robot settings**: Ensure robot is in group chat and configured correctly
@@ -298,10 +297,9 @@ cchook/
 
 3. **Test notifications**: Run notification tests
    ```bash
-   cchook test
-   # Or test specific type
-   cchook test dingtalk
-   cchook test macos
+   cchook config test
+   # Or test all types
+   cchook config test --all
    ```
 
 4. **Check permissions**: On macOS, ensure terminal has permission to send notifications
@@ -340,6 +338,12 @@ MIT License
 Issues and Pull Requests are welcome!
 
 ## 📝 Changelog
+
+### v1.1.1
+- **Refactor**: Migrated events command as config subcommand
+- **Breaking**: Removed `cchook events` command, use `cchook config events` instead
+- **Fix**: Updated all related documentation and prompt messages
+- **Improvement**: Optimized command structure for better user experience
 
 ### v1.0.0
 - Initial release
