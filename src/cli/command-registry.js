@@ -2,9 +2,7 @@ import { setupCommand } from './commands/setup.js';
 import { modeCommand } from './commands/mode.js';
 import { eventsCommand } from './commands/events.js';
 import { statusCommand } from './commands/status.js';
-import { testCommand } from './commands/test.js';
 import { logsCommand } from './commands/logs.js';
-import { notifyCommand } from './commands/notify.js';
 import { configCommand } from './commands/config.js';
 import { switchCommand } from './commands/switch.js';
 import { Logger } from '../utils/logger.js';
@@ -36,9 +34,7 @@ export class CommandRegistry {
       this.registerCommand('mode', modeCommand, program);
       this.registerCommand('events', eventsCommand, program);
       this.registerCommand('status', statusCommand, program);
-      this.registerCommand('test', testCommand, program);
       this.registerCommand('logs', logsCommand, program);
-      this.registerCommand('notify', notifyCommand, program);
       this.registerCommand('config', configCommand, program);
       this.registerCommand('switch', switchCommand, program);
 

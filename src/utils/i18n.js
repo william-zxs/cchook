@@ -275,7 +275,12 @@ const messages = {
     'config.list.types.usage.multiple': '  # 设置多个默认类型',
     'config.list.types.usage.multiple.example': '  cchook config types --set "dingtalk,macos"',
     'config.list.types.usage.temporary': '  # 临时指定类型',
-    'config.list.types.usage.temporary.example': '  cchook notify --types "dingtalk,macos" --msg "消息内容"'
+    'config.list.types.usage.temporary.example': '  cchook notify --types "dingtalk,macos" --msg "消息内容"',
+
+    // Config test command
+    'config.test.description': '测试当前配置',
+    'config.test.all': '测试所有通知类型',
+    'config.test.failed': '配置测试失败: {0}'
   },
 
   'en-US': {
@@ -532,6 +537,11 @@ const messages = {
     'config.list.types.usage.multiple.example': '  cchook config types --set "dingtalk,macos"',
     'config.list.types.usage.temporary': '  # Temporarily specify types',
     'config.list.types.usage.temporary.example': '  cchook notify --types "dingtalk,macos" --msg "message content"',
+
+    // Config test command
+    'config.test.description': 'Test current configuration',
+    'config.test.all': 'Test all notification types',
+    'config.test.failed': 'Configuration test failed: {0}',
 
     // Command registry
     'registry.help.info': 'Available commands: {0}',
