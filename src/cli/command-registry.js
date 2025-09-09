@@ -1,6 +1,5 @@
 import { setupCommand } from './commands/setup.js';
 import { modeCommand } from './commands/mode.js';
-import { eventsCommand } from './commands/events.js';
 import { statusCommand } from './commands/status.js';
 import { logsCommand } from './commands/logs.js';
 import { configCommand } from './commands/config.js';
@@ -32,7 +31,6 @@ export class CommandRegistry {
       // 注册所有命令
       this.registerCommand('setup', setupCommand, program);
       this.registerCommand('mode', modeCommand, program);
-      this.registerCommand('events', eventsCommand, program);
       this.registerCommand('status', statusCommand, program);
       this.registerCommand('logs', logsCommand, program);
       this.registerCommand('config', configCommand, program);

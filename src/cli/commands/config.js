@@ -2,6 +2,7 @@ import { ConfigManager } from '../../config/manager.js';
 import { NotificationFactory } from '../../notifications/factory.js';
 import { Logger } from '../../utils/logger.js';
 import i18n from '../../utils/i18n.js';
+import { eventsSubcommand } from './events.js';
 
 /**
  * 将底层技术实现类型映射为用户友好的显示名称
@@ -195,6 +196,9 @@ export function configCommand(program) {
         process.exit(1);
       }
     });
+
+  // 添加 events 子命令
+  eventsSubcommand(configCmd);
 }
 
 async function testCurrentConfig() {

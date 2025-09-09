@@ -4,8 +4,8 @@ import { Logger } from '../../utils/logger.js';
 import i18n from '../../utils/i18n.js';
 import { program as commanderProgram } from 'commander';
 
-export function eventsCommand(program) {
-  const eventsCmd = program
+export function eventsSubcommand(configCmd) {
+  const eventsCmd = configCmd
     .command('events')
     .description(i18n.t('events.description'));
 
