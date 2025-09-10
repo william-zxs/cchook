@@ -1,6 +1,6 @@
 {
   "name": "cchook",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Claude Code hook management tool - Command-line interface for managing hooks and notifications",
   "main": "src/index.js",
   "bin": {
